@@ -1,0 +1,25 @@
+# Netlify Redirects and Routing Configuration
+# Handle special puzzle routes and 404 page
+
+# Redirect the secret puzzle path to the special 404 page
+/sector7/classified   /404.html   200
+
+# Handle all other 404s with the same special page
+/*   /404.html   404
+
+# Security headers for enhanced protection
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+# Cache optimization
+/src/css/*
+  Cache-Control: max-age=31536000, immutable
+
+/src/js/*
+  Cache-Control: max-age=31536000, immutable
+
+/src/assets/*
+  Cache-Control: max-age=31536000, immutable

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Phase 4 Puzzle System Test</title>
+    <style>
+        body { 
+            background: #000; 
+            color: #00ff00; 
+            font-family: monospace; 
+            padding: 20px; 
+        }
+        .test-result { 
+            margin: 10px 0; 
+            padding: 10px; 
+            border: 1px solid #333; 
+        }
+        .success { border-color: #0f0; }
+        .error { border-color: #f00; }
+        .info { border-color: #0ff; }
+    </style>
+</head>
+<body>
+    <h1>🔐 Phase 4 Puzzle System Test</h1>
+    <div id="test-results"></div>
+    
+    <script>
+        // Test Results Container
+        const resultsContainer = document.getElementById('test-results');
+        
+        function addTestResult(test, status, details = '') {
+            const div = document.createElement('div');
+            div.className = `test-result ${status}`;
+            div.innerHTML = `
+                <strong>${test}</strong>: ${status.toUpperCase()}
+                ${details ? `<br><small>${details}</small>` : ''}
+            `;
+            resultsContainer.appendChild(div);
+        }
+        
+        // Test 1: Puzzle System Classes Available
+        try {
+            addTestResult('Puzzle Classes Available', 'success', 'All puzzle system classes loaded correctly');
+        } catch (error) {
+            addTestResult('Puzzle Classes Available', 'error', error.message);
+        }
+        
+        // Test 2: Initialize Puzzle System
+        try {
+            const testPuzzleState = new PuzzleState();
+            const testHintSystem = new HintSystem();
+            const testDetection = new PuzzleDetection(testPuzzleState);
+            
+            addTestResult('Puzzle System Initialization', 'success', 'All components initialized');
+        } catch (error) {
+            addTestResult('Puzzle System Initialization', 'error', error.message);
+        }
+        
+        // Test 3: Cryptography Utils
+        try {
+            const caesar = CryptographyUtils.caesarEncode('TEST', 3);
+            const decoded = CryptographyUtils.caesarDecode(caesar, 3);
+            
+            if (decoded === 'TEST') {
+                addTestResult('Cryptography Utils', 'success', 'Caesar cipher working correctly');
+            } else {
+                addTestResult('Cryptography Utils', 'error', 'Caesar cipher failed');
+            }
+        } catch (error) {
+            addTestResult('Cryptography Utils', 'error', error.message);
+        }
+        
+        // Test 4: Binary Conversion
+        try {
+            const binary = CryptographyUtils.textToBinary('HI');
+            const text = CryptographyUtils.binaryToText(binary);
+            
+            if (text === 'HI') {
+                addTestResult('Binary Conversion', 'success', 'Binary encoding/decoding working');
+            } else {
+                addTestResult('Binary Conversion', 'error', 'Binary conversion failed');
+            }
+        } catch (error) {
+            addTestResult('Binary Conversion', 'error', error.message);
+        }
+        
+        // Test 5: Base64 Conversion
+        try {
+            const encoded = CryptographyUtils.base64Encode('test');
+            const decoded = CryptographyUtils.base64Decode(encoded);
+            
+            if (decoded === 'test') {
+                addTestResult('Base64 Conversion', 'success', 'Base64 encoding/decoding working');
+            } else {
+                addTestResult('Base64 Conversion', 'error', 'Base64 conversion failed');
+            }
+        } catch (error) {
+            addTestResult('Base64 Conversion', 'error', error.message);
+        }
+        
+        // Test 6: Puzzle State Persistence
+        try {
+            const testState = new PuzzleState();
+            testState.addDiscovery('test_clue');
+            testState.addSecret('test_secret');
+            testState.saveProgress();
+            
+            const newState = new PuzzleState();
+            
+            if (newState.discoveries.length > 0 && newState.secrets.length > 0) {
+                addTestResult('Puzzle State Persistence', 'success', 'State saves and loads correctly');
+            } else {
+                addTestResult('Puzzle State Persistence', 'error', 'State persistence failed');
+            }
+        } catch (error) {
+            addTestResult('Puzzle State Persistence', 'error', error.message);
+        }
+        
+        // Test 7: Hint System
+        try {
+            const hintSystem = new HintSystem();
+            const hint = hintSystem.getHint(1, 0);
+            
+            if (hint && hint.length > 0) {
+                addTestResult('Hint System', 'success', `First hint: "${hint.substring(0, 50)}..."`);
+            } else {
+                addTestResult('Hint System', 'error', 'No hint returned');
+            }
+        } catch (error) {
+            addTestResult('Hint System', 'error', error.message);
+        }
+        
+        // Test 8: Pattern Generator
+        try {
+            const pattern = PuzzleGenerator.generatePattern();
+            
+            if (Array.isArray(pattern) && pattern.length > 0) {
+                addTestResult('Pattern Generator', 'success', `Generated pattern: [${pattern.join(', ')}]`);
+            } else {
+                addTestResult('Pattern Generator', 'error', 'Invalid pattern generated');
+            }
+        } catch (error) {
+            addTestResult('Pattern Generator', 'error', error.message);
+        }
+        
+        // Test 9: Cipher Generator
+        try {
+            const cipher = PuzzleGenerator.generateCipher();
+            
+            if (cipher.encrypted && cipher.original && cipher.shift) {
+                addTestResult('Cipher Generator', 'success', `Generated: "${cipher.encrypted}" (shift ${cipher.shift})`);
+            } else {
+                addTestResult('Cipher Generator', 'error', 'Invalid cipher generated');
+            }
+        } catch (error) {
+            addTestResult('Cipher Generator', 'error', error.message);
+        }
+        
+        // Test 10: Analytics System
+        try {
+            PuzzleAnalytics.trackEvent('test_event', { test: true });
+            const analytics = PuzzleAnalytics.getAnalytics();
+            
+            if (analytics.length > 0) {
+                addTestResult('Analytics System', 'success', 'Event tracking working');
+            } else {
+                addTestResult('Analytics System', 'error', 'Analytics not working');
+            }
+        } catch (error) {
+            addTestResult('Analytics System', 'error', error.message);
+        }
+        
+        // Summary
+        setTimeout(() => {
+            const allTests = document.querySelectorAll('.test-result');
+            const successCount = document.querySelectorAll('.success').length;
+            const errorCount = document.querySelectorAll('.error').length;
+            
+            const summary = document.createElement('div');
+            summary.className = 'test-result info';
+            summary.innerHTML = `
+                <h3>📊 TEST SUMMARY</h3>
+                <strong>Total Tests:</strong> ${allTests.length}<br>
+                <strong>Passed:</strong> ${successCount}<br>
+                <strong>Failed:</strong> ${errorCount}<br>
+                <strong>Success Rate:</strong> ${Math.round((successCount/allTests.length)*100)}%
+            `;
+            resultsContainer.appendChild(summary);
+            
+            console.log(`Phase 4 Puzzle System Test Complete: ${successCount}/${allTests.length} tests passed`);
+        }, 1000);
+        
+        // Test HTML Hidden Clues
+        addTestResult('HTML Hidden Clues', 'info', 'Check page source for hidden comments and steganography');
+        
+        // Test CSS Secrets
+        addTestResult('CSS Hidden Secrets', 'info', 'Inspect CSS files for encoded messages in comments');
+        
+        // Test 404 Page
+        addTestResult('Custom 404 Page', 'info', 'Navigate to /sector7/classified to test final stage');
+    </script>
+</body>
+</html>

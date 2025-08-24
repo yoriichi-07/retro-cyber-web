@@ -75,6 +75,22 @@ class App {
         }
 
         this.terminal = new Terminal();
+        
+        // Initialize puzzle system if available
+        if (typeof initializePuzzleSystem !== 'undefined') {
+            const { puzzleState, hintSystem, puzzleDetection } = initializePuzzleSystem();
+            this.puzzleState = puzzleState;
+            this.hintSystem = hintSystem;
+            this.puzzleDetection = puzzleDetection;
+            
+            // Register puzzle commands with terminal
+            if (typeof PuzzleCommands !== 'undefined') {
+                PuzzleCommands.register(this.terminal.commands, puzzleState, hintSystem);
+            }
+            
+            console.log('🔐 Puzzle system integrated');
+        }
+        
         console.log('✅ Terminal system initialized');
     }
 
@@ -87,7 +103,7 @@ class App {
             this.resizeCanvas();
         }, 250));
 
-        // Keyboard shortcuts
+        // Keyboard shortcuts and puzzle interactions
         document.addEventListener('keydown', (e) => {
             this.handleGlobalKeydown(e);
         });
@@ -110,7 +126,52 @@ class App {
             themeToggle.addEventListener('click', () => this.cycleTheme());
         }
 
+        // Initialize Konami code detection
+        this.initializeKonamiCode();
+
         console.log('✅ Event listeners initialized');
+    }
+
+    /**
+     * Initialize Konami code detection
+     */
+    initializeKonamiCode() {
+        this.konamiSequence = [];
+        this.konamiCode = [
+            'ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown',
+            'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight',
+            'KeyB', 'KeyA'
+        ];
+
+        document.addEventListener('keydown', (e) => {
+            this.konamiSequence.push(e.code);
+            
+            // Keep only the last 10 keys
+            if (this.konamiSequence.length > this.konamiCode.length) {
+                this.konamiSequence.shift();
+            }
+            
+            // Check if sequence matches
+            if (this.konamiSequence.length === this.konamiCode.length) {
+                if (this.konamiSequence.every((key, index) => key === this.konamiCode[index])) {
+                    this.triggerKonamiCode();
+                }
+            }
+        });
+    }
+
+    /**
+     * Trigger Konami code effects
+     */
+    triggerKonamiCode() {
+        if (this.terminal && this.terminal.commands.konami) {
+            this.terminal.commands.konami(this.terminal, []);
+        } else {
+            console.log('🎮 Konami code activated!');
+        }
+        
+        // Reset sequence
+        this.konamiSequence = [];
     }
 
     /**

@@ -6,6 +6,8 @@
 
 /* Main Styles for Retro Cyber World Terminal */
 /* Terminal interface, CRT effects, and cyberpunk aesthetics */
+/* HIDDEN SECRET 1: Look for the white rabbit in the matrix */
+/* CSS_CIPHER: FRPHEV PBQR VF UBYYVATJBBQ (ROT13 encoded) */
 
 /* === MATRIX RAIN CANVAS === */
 #matrix-canvas {
@@ -17,6 +19,7 @@
     z-index: var(--z-background);
     pointer-events: none;
     opacity: 0.6;
+    /* SECRET: The answer to the ultimate question is 42 */
 }
 
 /* === MAIN CONTENT LAYOUT === */
@@ -28,6 +31,7 @@
     align-items: center;
     justify-content: center;
     padding: var(--space-lg);
+    /* HIDDEN_BINARY: 01110000 01110101 01111010 01111010 01101100 01100101 */
 }
 
 /* === TERMINAL CONTAINER === */
@@ -43,9 +47,11 @@
         0 0 30px rgba(0, 240, 255, 0.3);
     position: relative;
     overflow: hidden;
+    /* SECRET_HEX: 676861737420696e20746865206d616368696e65 */
 }
 
 /* CRT Screen Curvature Effect */
+/* SEQUENCE_PATTERN: 2, 4, 8, 16, 32, ? (answer: 64) */
 #terminal-container::before {
     content: '';
     position: absolute;
