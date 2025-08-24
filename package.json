@@ -1,0 +1,47 @@
+{
+  "name": "retro-cyber-web",
+  "version": "1.0.0",
+  "description": "An immersive retro cyberpunk terminal interface with puzzle mechanics",
+  "main": "src/js/main.js",
+  "scripts": {
+    "dev": "python -m http.server 8080 --directory .",
+    "start": "npm run dev",
+    "build": "npm run build:css && npm run build:js",
+    "build:css": "echo 'CSS build - using vanilla CSS, no build needed'",
+    "build:js": "echo 'JS build - using vanilla JS, no build needed'",
+    "test": "echo 'Tests will be implemented in Phase 3'",
+    "lint": "echo 'Linting will be added in development phase'",
+    "serve": "python -m http.server 8080 --directory .",
+    "preview": "npm run serve"
+  },
+  "keywords": [
+    "cyberpunk",
+    "terminal",
+    "puzzle",
+    "retro",
+    "interactive",
+    "web",
+    "game"
+  ],
+  "author": "Cyberpunk Terminal Team",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/retro-cyber-web.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/retro-cyber-web/issues"
+  },
+  "homepage": "https://github.com/yourusername/retro-cyber-web#readme",
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}

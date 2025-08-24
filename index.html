@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro Cyber World - Terminal Interface</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="An immersive cyberpunk terminal interface with hidden puzzles and secrets. Experience the retro cyber world through an authentic hacker terminal.">
+    <meta name="keywords" content="cyberpunk, terminal, hacker, retro, interactive, puzzle, cyber, matrix, neon">
+    <meta name="author" content="Retro Cyber World">
+    
+    <!-- Open Graph Meta Tags for Social Sharing -->
+    <meta property="og:title" content="Retro Cyber World - Terminal Interface">
+    <meta property="og:description" content="An immersive cyberpunk terminal interface with hidden puzzles and secrets">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://retro-cyber-world.netlify.app">
+    <meta property="og:image" content="https://retro-cyber-world.netlify.app/assets/og-image.png">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Retro Cyber World - Terminal Interface">
+    <meta name="twitter:description" content="An immersive cyberpunk terminal interface with hidden puzzles and secrets">
+    <meta name="twitter:image" content="https://retro-cyber-world.netlify.app/assets/twitter-card.png">
+    
+    <!-- Preload Critical Resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="src/css/variables.css" as="style">
+    <link rel="preload" href="src/css/main.css" as="style">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&family=VT323&display=swap" rel="stylesheet">
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="src/css/reset.css">
+    <link rel="stylesheet" href="src/css/variables.css">
+    <link rel="stylesheet" href="src/css/base.css">
+    <link rel="stylesheet" href="src/css/main.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="src/assets/favicon.ico">
+</head>
+<body>
+    <!-- Skip Links for Accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <!-- Matrix Rain Canvas Background -->
+    <canvas id="matrix-canvas" aria-hidden="true"></canvas>
+    
+    <!-- Main Terminal Interface -->
+    <main id="main-content" role="main" aria-label="Cyber Terminal Interface">
+        <div id="terminal-container">
+            <section id="terminal" role="log" aria-live="polite" aria-label="Terminal Output">
+                <!-- Terminal Output Area -->
+                <pre id="output-area" aria-atomic="false"></pre>
+                
+                <!-- Command Input Area -->
+                <div id="input-area" role="group" aria-label="Command Input">
+                    <span class="prompt" aria-hidden="true">user@cyberterminal:~$</span>
+                    <label for="command-input" class="sr-only">Enter terminal command</label>
+                    <input 
+                        type="text" 
+                        id="command-input" 
+                        aria-describedby="command-help"
+                        autocomplete="off" 
+                        spellcheck="false"
+                        autofocus
+                        placeholder="Type 'help' for commands...">
+                    <div id="command-help" class="sr-only">
+                        Type 'help' to see available commands. Use arrow keys to navigate command history.
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+    
+    <!-- Hidden Elements for Secret Clues -->
+    <!-- The first key lies hidden where mortals fear to tread... -->
+    <!-- 01001000 01100101 01101100 01110000 (Help in binary) -->
+    <!-- Caesar cipher: WKH DQVZHU LV LQ WKH FRQVROH (shift 3) -->
+    <!-- Base64: VGhlIGZpcnN0IGNsdWUgaXMgaW4gdGhlIENTUw== -->
+    
+    <!-- Noscript Fallback -->
+    <noscript>
+        <div class="noscript-message">
+            <h1>JavaScript Required</h1>
+            <p>This cyberpunk terminal experience requires JavaScript to function. Please enable JavaScript in your browser and reload the page.</p>
+        </div>
+    </noscript>
+    
+    <!-- JavaScript Files -->
+    <script src="src/js/utils.js"></script>
+    <script src="src/js/terminal.js"></script>
+    <script src="src/js/typewriter.js"></script>
+    <script src="src/js/commands.js"></script>
+    <script src="src/js/main.js"></script>
+</body>
+</html>

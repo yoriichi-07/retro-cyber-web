@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Test - Retro Cyber Web</title>
+    <style>
+        body {
+            background: #000;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+        }
+        .test { margin: 10px 0; }
+        .pass { color: #0f0; }
+        .fail { color: #f00; }
+        .info { color: #ff0; }
+    </style>
+</head>
+<body>
+    <h1>🧪 System Test - Retro Cyber Web</h1>
+    <div id="test-results"></div>
+
+    <script src="src/js/utils.js"></script>
+    <script src="src/js/typewriter.js"></script>
+    <script src="src/js/commands.js"></script>
+    <script src="src/js/terminal.js"></script>
+    <script src="src/js/main.js"></script>
+
+    <script>
+        const results = document.getElementById('test-results');
+        
+        function addTest(name, status, message = '') {
+            const div = document.createElement('div');
+            div.className = `test ${status}`;
+            div.innerHTML = `${status === 'pass' ? '✅' : status === 'fail' ? '❌' : 'ℹ️'} ${name}: ${message}`;
+            results.appendChild(div);
+        }
+
+        // Test utilities
+        try {
+            const randomNum = Utils.random(1, 10);
+            addTest('Utils.random()', randomNum >= 1 && randomNum <= 10 ? 'pass' : 'fail', `Generated: ${randomNum}`);
+            
+            const encoded = Utils.base64Encode('Hello World');
+            const decoded = Utils.base64Decode(encoded);
+            addTest('Utils.base64', decoded === 'Hello World' ? 'pass' : 'fail', `"Hello World" -> "${encoded}" -> "${decoded}"`);
+            
+            const binary = Utils.textToBinary('Hi');
+            addTest('Utils.textToBinary()', binary.includes('01001000') ? 'pass' : 'fail', `"Hi" -> ${binary}`);
+            
+            const caesared = Utils.caesarCipher('ABC', 3);
+            addTest('Utils.caesarCipher()', caesared === 'DEF' ? 'pass' : 'fail', `"ABC" -> "${caesared}"`);
+            
+        } catch (e) {
+            addTest('Utils module', 'fail', e.message);
+        }
+
+        // Test typewriter
+        try {
+            addTest('Typewriter class', typeof Typewriter !== 'undefined' ? 'pass' : 'fail');
+            addTest('Global typewriter', typeof typewriter !== 'undefined' ? 'pass' : 'fail');
+        } catch (e) {
+            addTest('Typewriter module', 'fail', e.message);
+        }
+
+        // Test commands
+        try {
+            const commandCount = Object.keys(Commands).length;
+            addTest('Commands module', commandCount > 10 ? 'pass' : 'fail', `${commandCount} commands available`);
+            addTest('Help command', typeof Commands.help === 'function' ? 'pass' : 'fail');
+            addTest('Cipher command', typeof Commands.cipher === 'function' ? 'pass' : 'fail');
+        } catch (e) {
+            addTest('Commands module', 'fail', e.message);
+        }
+
+        // Test terminal
+        try {
+            addTest('Terminal class', typeof Terminal !== 'undefined' ? 'pass' : 'fail');
+        } catch (e) {
+            addTest('Terminal module', 'fail', e.message);
+        }
+
+        // Test main app
+        try {
+            addTest('App class', typeof App !== 'undefined' ? 'pass' : 'fail');
+            addTest('Global app instance', typeof window.app !== 'undefined' ? 'pass' : 'fail');
+            
+            setTimeout(() => {
+                const status = window.app ? window.app.getStatus() : null;
+                if (status) {
+                    addTest('App initialization', status.initialized ? 'pass' : 'fail', JSON.stringify(status));
+                }
+            }, 1000);
+        } catch (e) {
+            addTest('Main app', 'fail', e.message);
+        }
+
+        // Browser compatibility tests
+        addTest('Local Storage', typeof localStorage !== 'undefined' ? 'pass' : 'fail');
+        addTest('Canvas Support', document.createElement('canvas').getContext ? 'pass' : 'fail');
+        addTest('CSS Variables', CSS.supports('color', 'var(--test)') ? 'pass' : 'fail');
+        
+        // Device info
+        addTest('Device Type', 'info', Utils.isMobile() ? 'Mobile' : 'Desktop');
+        addTest('User Agent', 'info', navigator.userAgent.substring(0, 50) + '...');
+        
+        console.log('🧪 System test completed');
+    </script>
+</body>
+</html>

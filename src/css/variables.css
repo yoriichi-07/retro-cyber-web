@@ -1,0 +1,196 @@
+/* CSS Custom Properties for Retro Cyber World */
+/* Color palettes, typography, spacing, and theme variables */
+
+:root {
+    /* === TYPOGRAPHY SYSTEM === */
+    --font-primary: 'Inconsolata', 'Courier New', monospace;
+    --font-retro: 'VT323', 'Courier New', monospace;
+    --font-size-base: 1.3rem;
+    --font-size-small: 1rem;
+    --font-size-large: 1.6rem;
+    --font-size-xl: 2rem;
+    --line-height-base: 1.4;
+    --line-height-tight: 1.2;
+    --letter-spacing-normal: 0.05em;
+    --letter-spacing-wide: 0.1em;
+
+    /* === COLOR PALETTE === */
+    /* Default theme: Dystopian Noir */
+    --color-bg-primary: #050A0E;
+    --color-bg-secondary: #0A1117;
+    --color-text-primary: #00F0FF;
+    --color-text-secondary: #FAFAFA;
+    --color-text-muted: #8A9BA8;
+    --color-accent-1: #FF003C;
+    --color-accent-2: #39FF14;
+    
+    /* === SEMANTIC COLORS === */
+    --color-success: #39FF14;
+    --color-error: #FF003C;
+    --color-warning: #FCEE0C;
+    --color-info: #00F0FF;
+    --color-prompt: #00F0FF;
+    --color-input: #FAFAFA;
+    --color-selection: rgba(0, 240, 255, 0.3);
+    
+    /* === CYBERPUNK THEME VARIATIONS === */
+    
+    /* Synthwave Sunset Theme */
+    --synthwave-bg-primary: #9400D3;
+    --synthwave-bg-secondary: #4B0082;
+    --synthwave-text-primary: #FF00FF;
+    --synthwave-text-secondary: #FFD700;
+    --synthwave-accent-1: #FF4500;
+    --synthwave-accent-2: #00FFFF;
+    
+    /* Acid Burn Theme */
+    --acid-bg-primary: #000000;
+    --acid-bg-secondary: #111111;
+    --acid-text-primary: #74ee15;
+    --acid-text-secondary: #FCEE0C;
+    --acid-accent-1: #03D8F3;
+    --acid-accent-2: #74ee15;
+    
+    /* Holographic Glitch Theme */
+    --holo-bg-primary: #070F34;
+    --holo-bg-secondary: #0313A6;
+    --holo-text-primary: #F715AB;
+    --holo-text-secondary: #34EDF3;
+    --holo-accent-1: #9201CB;
+    --holo-accent-2: #F715AB;
+    
+    /* Mainframe Green Theme */
+    --matrix-bg-primary: #000000;
+    --matrix-bg-secondary: #001100;
+    --matrix-text-primary: #39FF14;
+    --matrix-text-secondary: #CCFF00;
+    --matrix-accent-1: #E7EE4F;
+    --matrix-accent-2: #39FF14;
+
+    /* === SPACING SCALE === */
+    --space-xs: 0.25rem;
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --space-xxl: 3rem;
+    
+    /* === BORDER RADIUS === */
+    --radius-sm: 2px;
+    --radius-md: 4px;
+    --radius-lg: 8px;
+    
+    /* === SHADOWS & GLOWS === */
+    --shadow-glow-sm: 0 0 5px currentColor;
+    --shadow-glow-md: 0 0 10px currentColor, 0 0 20px currentColor;
+    --shadow-glow-lg: 0 0 5px currentColor, 0 0 10px currentColor, 0 0 15px currentColor, 0 0 20px currentColor;
+    --shadow-text-glow: 0 0 5px currentColor, 0 0 10px currentColor;
+    
+    /* === TRANSITIONS === */
+    --transition-fast: 0.15s ease-out;
+    --transition-base: 0.3s ease-out;
+    --transition-slow: 0.6s ease-out;
+    
+    /* === Z-INDEX SCALE === */
+    --z-background: -1;
+    --z-content: 1;
+    --z-overlay: 10;
+    --z-modal: 100;
+    --z-tooltip: 1000;
+    
+    /* === RESPONSIVE BREAKPOINTS === */
+    --breakpoint-mobile: 480px;
+    --breakpoint-tablet: 768px;
+    --breakpoint-desktop: 1024px;
+    --breakpoint-wide: 1440px;
+    
+    /* === ANIMATION DURATIONS === */
+    --anim-fast: 0.2s;
+    --anim-base: 0.5s;
+    --anim-slow: 1s;
+    --anim-typewriter: 0.1s;
+    
+    /* === CRT EFFECT VARIABLES === */
+    --scanline-opacity: 0.15;
+    --scanline-spacing: 2px;
+    --screen-curve: 8px;
+    --glow-intensity: 0.75;
+}
+
+/* === THEME SWITCHING UTILITIES === */
+[data-theme="synthwave"] {
+    --color-bg-primary: var(--synthwave-bg-primary);
+    --color-bg-secondary: var(--synthwave-bg-secondary);
+    --color-text-primary: var(--synthwave-text-primary);
+    --color-text-secondary: var(--synthwave-text-secondary);
+    --color-accent-1: var(--synthwave-accent-1);
+    --color-accent-2: var(--synthwave-accent-2);
+}
+
+[data-theme="acid"] {
+    --color-bg-primary: var(--acid-bg-primary);
+    --color-bg-secondary: var(--acid-bg-secondary);
+    --color-text-primary: var(--acid-text-primary);
+    --color-text-secondary: var(--acid-text-secondary);
+    --color-accent-1: var(--acid-accent-1);
+    --color-accent-2: var(--acid-accent-2);
+}
+
+[data-theme="holographic"] {
+    --color-bg-primary: var(--holo-bg-primary);
+    --color-bg-secondary: var(--holo-bg-secondary);
+    --color-text-primary: var(--holo-text-primary);
+    --color-text-secondary: var(--holo-text-secondary);
+    --color-accent-1: var(--holo-accent-1);
+    --color-accent-2: var(--holo-accent-2);
+}
+
+[data-theme="matrix"] {
+    --color-bg-primary: var(--matrix-bg-primary);
+    --color-bg-secondary: var(--matrix-bg-secondary);
+    --color-text-primary: var(--matrix-text-primary);
+    --color-text-secondary: var(--matrix-text-secondary);
+    --color-accent-1: var(--matrix-accent-1);
+    --color-accent-2: var(--matrix-accent-2);
+}
+
+/* === UTILITY CLASSES === */
+.text-glow {
+    text-shadow: var(--shadow-text-glow);
+}
+
+.text-primary {
+    color: var(--color-text-primary);
+}
+
+.text-secondary {
+    color: var(--color-text-secondary);
+}
+
+.text-accent-1 {
+    color: var(--color-accent-1);
+}
+
+.text-accent-2 {
+    color: var(--color-accent-2);
+}
+
+.text-success {
+    color: var(--color-success);
+}
+
+.text-error {
+    color: var(--color-error);
+}
+
+.text-warning {
+    color: var(--color-warning);
+}
+
+.bg-primary {
+    background-color: var(--color-bg-primary);
+}
+
+.bg-secondary {
+    background-color: var(--color-bg-secondary);
+}
