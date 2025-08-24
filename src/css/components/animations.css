@@ -654,3 +654,428 @@
         animation-delay: calc(var(--stagger-1) * 0.5) !important;
     }
 }
+
+/* ================================
+   PHASE 5: Advanced Animation Styles
+   ================================ */
+
+/* Animation Canvas Base Styles */
+#animation-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Animation State Classes */
+.animation-state-idle {
+    --animation-intensity: 0.5;
+}
+
+.animation-state-typing {
+    --animation-intensity: 0.8;
+    --animation-speed: 1.2;
+}
+
+.animation-state-glitching {
+    --animation-intensity: 1.5;
+    --animation-speed: 2.0;
+}
+
+.animation-state-success {
+    --animation-intensity: 1.2;
+    --glow-color: #00ff00;
+}
+
+.animation-state-error {
+    --animation-intensity: 1.8;
+    --glow-color: #ff0000;
+}
+
+.animation-state-discovery {
+    --animation-intensity: 2.0;
+    --glow-color: #00ffff;
+}
+
+.animation-state-completion {
+    --animation-intensity: 3.0;
+    --glow-color: #ffffff;
+}
+
+/* High Contrast Mode Support */
+.high-contrast {
+    --animation-intensity: 0.8;
+    filter: contrast(1.5) brightness(1.2);
+}
+
+.high-contrast .fade-effects {
+    opacity: 0.9 !important;
+}
+
+.high-contrast .glitch-effects {
+    opacity: 0.7 !important;
+}
+
+/* Reduced Motion Accessibility */
+.reduced-motion {
+    --animation-intensity: 0.3;
+}
+
+.reduced-motion .matrix-rain {
+    animation-duration: 10s !important;
+}
+
+.reduced-motion .particle-effects {
+    display: none !important;
+}
+
+.reduced-motion .glitch-effects {
+    opacity: 0.2 !important;
+}
+
+/* Performance Quality Levels */
+.quality-low {
+    --particle-count: 200;
+    --matrix-density: 0.3;
+    --effect-intensity: 0.5;
+}
+
+.quality-medium {
+    --particle-count: 500;
+    --matrix-density: 0.6;
+    --effect-intensity: 0.8;
+}
+
+.quality-high {
+    --particle-count: 1000;
+    --matrix-density: 1.0;
+    --effect-intensity: 1.0;
+}
+
+/* Advanced Visual Effects */
+.cinematic-scanlines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    background: linear-gradient(
+        transparent 50%, 
+        rgba(0, 255, 0, 0.03) 51%
+    );
+    background-size: 100% 4px;
+    opacity: var(--animation-intensity, 0.3);
+}
+
+.cinematic-vignette {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    background: radial-gradient(
+        circle at center,
+        transparent 30%,
+        rgba(0, 0, 0, 0.6) 100%
+    );
+    opacity: var(--animation-intensity, 0.4);
+}
+
+.cinematic-film-grain {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    background-image: 
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 2px,
+            rgba(255, 255, 255, 0.03) 2px,
+            rgba(255, 255, 255, 0.03) 4px
+        );
+    opacity: var(--animation-intensity, 0.2);
+    animation: filmGrainMove 0.2s infinite linear;
+}
+
+@keyframes filmGrainMove {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(4px); }
+}
+
+/* Matrix Rain Enhancement */
+.matrix-enhancement {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    background: 
+        linear-gradient(90deg, transparent 0%, rgba(0, 255, 0, 0.1) 50%, transparent 100%);
+    animation: matrixSweep 3s infinite ease-in-out;
+    opacity: var(--animation-intensity, 0.8);
+}
+
+@keyframes matrixSweep {
+    0% { transform: translateX(-100%); }
+    50% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+}
+
+/* Interactive Particle Effects */
+.particle-burst {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--glow-color, #00ff00);
+    box-shadow: 0 0 6px var(--glow-color, #00ff00);
+    animation: particleBurst 1s ease-out forwards;
+}
+
+@keyframes particleBurst {
+    0% {
+        opacity: 1;
+        transform: scale(0);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.5);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.5) translate(var(--particle-dx, 0), var(--particle-dy, 0));
+    }
+}
+
+/* Glitch Distortion Effects */
+.glitch-distortion {
+    position: relative;
+}
+
+.glitch-distortion::before,
+.glitch-distortion::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: inherit;
+    mix-blend-mode: difference;
+}
+
+.glitch-distortion::before {
+    animation: glitchWave 0.3s infinite ease-in-out;
+    color: #ff0040;
+    transform: translateX(-2px);
+}
+
+.glitch-distortion::after {
+    animation: glitchWave 0.3s infinite ease-in-out reverse;
+    color: #00ffff;
+    transform: translateX(2px);
+}
+
+@keyframes glitchWave {
+    0% { transform: translateX(0); }
+    20% { transform: translateX(-2px); }
+    40% { transform: translateX(2px); }
+    60% { transform: translateX(-1px); }
+    80% { transform: translateX(1px); }
+    100% { transform: translateX(0); }
+}
+
+/* Screen Distortion Effects */
+.screen-ripple {
+    animation: screenRipple 0.8s ease-out;
+}
+
+@keyframes screenRipple {
+    0% {
+        filter: blur(0) contrast(1);
+        transform: scale(1);
+    }
+    50% {
+        filter: blur(2px) contrast(1.5);
+        transform: scale(1.02);
+    }
+    100% {
+        filter: blur(0) contrast(1);
+        transform: scale(1);
+    }
+}
+
+.screen-wave {
+    animation: screenWave 1s ease-in-out;
+}
+
+@keyframes screenWave {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(2px);
+    }
+    75% {
+        transform: translateX(-2px);
+    }
+}
+
+/* Atmospheric Lighting Effects */
+.atmosphere-pulse {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    background: var(--glow-color, #00ff00);
+    opacity: 0;
+    animation: atmospherePulse 2s ease-in-out infinite;
+    mix-blend-mode: screen;
+}
+
+@keyframes atmospherePulse {
+    0%, 100% { opacity: 0; }
+    50% { opacity: var(--pulse-intensity, 0.1); }
+}
+
+/* Energy Stream Effects */
+.energy-stream {
+    position: absolute;
+    width: 2px;
+    height: 100%;
+    background: linear-gradient(
+        to bottom,
+        transparent,
+        var(--glow-color, #00ffff),
+        transparent
+    );
+    animation: energyFlow 2s linear infinite;
+    opacity: var(--animation-intensity, 0.7);
+}
+
+@keyframes energyFlow {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100%); }
+}
+
+/* Data Corruption Visualization */
+.data-corruption {
+    position: relative;
+    overflow: hidden;
+}
+
+.data-corruption::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 0, 64, 0.3),
+        rgba(0, 255, 128, 0.3),
+        rgba(64, 128, 255, 0.3),
+        transparent
+    );
+    animation: dataCorruptionSweep 2s ease-in-out;
+}
+
+@keyframes dataCorruptionSweep {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* Network Trace Visualization */
+.network-trace {
+    position: relative;
+}
+
+.network-node {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--glow-color, #00ffff);
+    box-shadow: 0 0 12px var(--glow-color, #00ffff);
+    animation: networkPulse 1.5s ease-in-out infinite;
+}
+
+.network-connection {
+    position: absolute;
+    height: 2px;
+    background: var(--glow-color, #00ffff);
+    opacity: 0;
+    animation: networkConnection 0.5s ease-out forwards;
+}
+
+@keyframes networkPulse {
+    0%, 100% { 
+        opacity: 0.6;
+        transform: scale(1);
+    }
+    50% { 
+        opacity: 1;
+        transform: scale(1.3);
+    }
+}
+
+@keyframes networkConnection {
+    0% {
+        opacity: 0;
+        width: 0;
+    }
+    100% {
+        opacity: 0.8;
+        width: 100%;
+    }
+}
+
+/* Performance Optimization Classes */
+.gpu-accelerated {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+.will-animate {
+    will-change: transform, opacity, filter;
+}
+
+/* Animation Frame Rate Control */
+@media (max-width: 768px) {
+    .energy-stream {
+        animation-duration: 4s;
+    }
+    
+    .particle-burst {
+        animation-duration: 0.5s;
+    }
+    
+    .matrix-enhancement {
+        animation-duration: 6s;
+    }
+}
+
+/* Ultra-wide Screen Optimizations */
+@media (min-aspect-ratio: 21/9) {
+    .cinematic-vignette {
+        background: radial-gradient(
+            ellipse at center,
+            transparent 20%,
+            rgba(0, 0, 0, 0.4) 100%
+        );
+    }
+}

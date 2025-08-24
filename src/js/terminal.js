@@ -983,6 +983,255 @@ class Terminal {
         this.input.disabled = false;
         this.focusInput();
     }
+
+    /**
+     * PHASE 5: Initialize Advanced Animation Systems
+     */
+    async initializeAdvancedAnimations() {
+        try {
+            // Create background canvas for animations
+            const animationCanvas = document.createElement('canvas');
+            animationCanvas.id = 'animation-canvas';
+            animationCanvas.style.position = 'fixed';
+            animationCanvas.style.top = '0';
+            animationCanvas.style.left = '0';
+            animationCanvas.style.width = '100%';
+            animationCanvas.style.height = '100%';
+            animationCanvas.style.pointerEvents = 'none';
+            animationCanvas.style.zIndex = '-1';
+            document.body.prepend(animationCanvas);
+
+            // Set canvas size
+            this.resizeAnimationCanvas(animationCanvas);
+            window.addEventListener('resize', () => this.resizeAnimationCanvas(animationCanvas));
+
+            // Initialize animation integration system
+            this.animationIntegration = new AnimationIntegration();
+            await this.animationIntegration.initialize(animationCanvas);
+
+            // Initialize visual effects
+            this.cinematicEffects = new CinematicEffects(animationCanvas);
+            this.screenDistortion = new ScreenDistortion(animationCanvas);
+            this.atmosphereEnhancement = new AtmosphereEnhancement(animationCanvas);
+
+            // Start environmental atmosphere
+            this.atmosphereEnhancement.setAmbientLevel(0.3);
+            this.atmosphereEnhancement.setColorTint('#002010');
+
+            // Activate base cinematic effects
+            this.cinematicEffects.activateEffect('scanlines', { intensity: 0.2 });
+            this.cinematicEffects.activateEffect('vignette', { intensity: 0.3 });
+            this.cinematicEffects.activateEffect('filmGrain', { intensity: 0.1 });
+
+            // Setup animation event handlers
+            this.setupAnimationEventHandlers();
+
+            console.log('🎬 Phase 5 Advanced Animation Systems Initialized');
+            return true;
+
+        } catch (error) {
+            console.error('❌ Failed to initialize advanced animations:', error);
+            return false;
+        }
+    }
+
+    /**
+     * Resize animation canvas to match viewport
+     */
+    resizeAnimationCanvas(canvas) {
+        const dpr = window.devicePixelRatio || 1;
+        const rect = document.body.getBoundingClientRect();
+        
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        canvas.style.width = rect.width + 'px';
+        canvas.style.height = rect.height + 'px';
+        
+        const ctx = canvas.getContext('2d');
+        ctx.scale(dpr, dpr);
+    }
+
+    /**
+     * Setup animation event handlers for terminal interactions
+     */
+    setupAnimationEventHandlers() {
+        // Command execution events
+        const originalExecuteCommand = this.executeCommand.bind(this);
+        this.executeCommand = (command) => {
+            // Trigger typing animation state
+            this.triggerAnimationEvent('command', { command, type: 'start' });
+            
+            // Execute original command
+            const result = originalExecuteCommand(command);
+            
+            // Trigger result animation state
+            this.triggerAnimationEvent('command', { 
+                command, 
+                type: 'result', 
+                success: !command.startsWith('error') 
+            });
+            
+            return result;
+        };
+
+        // Error handling with glitch effects
+        const originalAddError = this.addError.bind(this);
+        this.addError = (message) => {
+            this.triggerAnimationEvent('error', { message });
+            return originalAddError(message);
+        };
+
+        // Boot sequence with cinematic effects
+        const originalStartBootSequence = this.startBootSequence.bind(this);
+        this.startBootSequence = () => {
+            this.cinematicEffects.activateEffect('systemBoot', { duration: 5000 });
+            return originalStartBootSequence();
+        };
+
+        // Listen for puzzle events
+        document.addEventListener('puzzleDiscovered', (e) => {
+            this.triggerAnimationEvent('discovery', e.detail);
+        });
+
+        document.addEventListener('puzzleCompleted', (e) => {
+            this.triggerAnimationEvent('completion', e.detail);
+        });
+    }
+
+    /**
+     * Trigger animation events for different terminal states
+     */
+    triggerAnimationEvent(type, data = {}) {
+        if (!this.animationIntegration) return;
+
+        switch (type) {
+            case 'command':
+                if (data.type === 'start') {
+                    this.animationIntegration.animationController.setState('typing');
+                } else if (data.type === 'result') {
+                    this.animationIntegration.animationController.setState(
+                        data.success ? 'success' : 'error'
+                    );
+                }
+                break;
+
+            case 'error':
+                this.animationIntegration.animationController.setState('error');
+                this.screenDistortion.applyDistortion('glitch', 0.8, 500);
+                this.atmosphereEnhancement.triggerEnvironmentalEvent('lightning', {
+                    intensity: 0.5
+                });
+                break;
+
+            case 'discovery':
+                this.animationIntegration.animationController.setState('discovery');
+                this.cinematicEffects.activateEffect('dataCorruption', { 
+                    duration: 1000, 
+                    intensity: 0.7 
+                });
+                this.atmosphereEnhancement.triggerEnvironmentalEvent('energyPulse', {
+                    color: '#00ff80'
+                });
+                break;
+
+            case 'completion':
+                this.animationIntegration.animationController.setState('completion');
+                this.cinematicEffects.activateEffect('matrixOverlay', { 
+                    duration: 3000, 
+                    intensity: 1.0 
+                });
+                this.atmosphereEnhancement.triggerEnvironmentalEvent('dataStorm', {
+                    duration: 2000
+                });
+                break;
+
+            case 'glitch':
+                this.animationIntegration.animationController.setState('glitching');
+                this.screenDistortion.applyDistortion('wave', 1.2, 800);
+                this.screenDistortion.applyDistortion('ripple', 0.8, 1200);
+                break;
+
+            case 'network':
+                this.cinematicEffects.activateEffect('networkTrace', { 
+                    duration: 4000, 
+                    intensity: 0.8 
+                });
+                break;
+
+            case 'memory':
+                this.cinematicEffects.activateEffect('memoryLeak', { 
+                    duration: 3000, 
+                    intensity: 0.9 
+                });
+                break;
+        }
+
+        // Dispatch custom event for external listeners
+        const event = new CustomEvent('terminalAnimation', {
+            detail: { type, data, timestamp: Date.now() }
+        });
+        document.dispatchEvent(event);
+    }
+
+    /**
+     * Enhanced command processing with animation triggers
+     */
+    processCommandWithAnimations(command) {
+        const cmd = command.toLowerCase().trim();
+        
+        // Special animation triggers for specific commands
+        const animationTriggers = {
+            'hack': 'glitch',
+            'virus': 'glitch',
+            'decrypt': 'discovery',
+            'crack': 'discovery',
+            'matrix': 'discovery',
+            'trace': 'network',
+            'ping': 'network',
+            'connect': 'network',
+            'memory': 'memory',
+            'debug': 'memory',
+            'core': 'memory'
+        };
+
+        // Check for animation triggers
+        for (const [trigger, animationType] of Object.entries(animationTriggers)) {
+            if (cmd.includes(trigger)) {
+                this.triggerAnimationEvent(animationType, { command: cmd });
+                break;
+            }
+        }
+    }
+
+    /**
+     * Get animation system status
+     */
+    getAnimationStatus() {
+        if (!this.animationIntegration) {
+            return { enabled: false, status: 'not_initialized' };
+        }
+
+        return this.animationIntegration.getStatus();
+    }
+
+    /**
+     * Control animation systems
+     */
+    setAnimationEnabled(enabled) {
+        if (this.animationIntegration) {
+            this.animationIntegration.enableAnimations(enabled);
+        }
+        this.animations = enabled;
+    }
+
+    /**
+     * Set master animation intensity
+     */
+    setAnimationIntensity(intensity) {
+        if (this.animationIntegration) {
+            this.animationIntegration.setMasterIntensity(intensity);
+        }
+    }
 }
 
 // Export for module systems or make globally available

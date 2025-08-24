@@ -76,6 +76,24 @@ class App {
 
         this.terminal = new Terminal();
         
+        // PHASE 5: Initialize advanced animation systems
+        console.log('🎬 Initializing Phase 5 Advanced Animation Systems...');
+        try {
+            // Check if animation classes are available
+            if (typeof AnimationIntegration !== 'undefined') {
+                const animationSuccess = await this.terminal.initializeAdvancedAnimations();
+                if (animationSuccess) {
+                    console.log('✅ Phase 5 Advanced Animations integrated with terminal');
+                } else {
+                    console.warn('⚠️ Phase 5 Advanced Animations failed to initialize');
+                }
+            } else {
+                console.warn('⚠️ Phase 5 Animation classes not loaded');
+            }
+        } catch (error) {
+            console.error('❌ Phase 5 Animation initialization error:', error);
+        }
+        
         // Initialize puzzle system if available
         if (typeof initializePuzzleSystem !== 'undefined') {
             const { puzzleState, hintSystem, puzzleDetection } = initializePuzzleSystem();
