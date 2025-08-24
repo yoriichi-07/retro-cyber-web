@@ -1,23 +1,10 @@
 {
   "version": 2,
   "name": "retro-cyber-world",
-  "builds": [
-    {
-      "src": "index.html",
-      "use": "@vercel/static"
-    }
-  ],
   "routes": [
     {
       "src": "/404.html",
       "dest": "/404.html"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
-    },
-    {
-      "handle": "filesystem"
     },
     {
       "src": "/(.*)",
