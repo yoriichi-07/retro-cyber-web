@@ -7,6 +7,8 @@ class Typewriter {
         this.isTyping = false;
         this.defaultSpeed = 50;
         this.defaultPause = 1000;
+        this.canSkip = false;
+        this.currentTask = null;
     }
 
     /**
@@ -18,28 +20,70 @@ class Typewriter {
         if (!this.isTyping) {
             this.processQueue();
         }
+        return this;
     }
 
     /**
-     * Process typing queue
+     * Type text with options - main public method
+     * @param {Element|string} element - Target element
+     * @param {string} text - Text to type
+     * @param {Object} options - Typing options
+     */
+    type(element, text, options = {}) {
+        return new Promise((resolve) => {
+            this.addToQueue({
+                type: 'type',
+                element,
+                text,
+                resolve,
+                ...options
+            });
+        });
+    }
+
+    /**
+     * Process typing queue with improved management
      */
     async processQueue() {
         if (this.queue.length === 0) {
             this.isTyping = false;
+            this.currentTask = null;
             return;
         }
 
         this.isTyping = true;
         const task = this.queue.shift();
+        this.currentTask = task;
         
         try {
             await this.executeTask(task);
+            if (task.resolve) task.resolve();
         } catch (error) {
             console.error('Typewriter error:', error);
+            if (task.resolve) task.resolve();
         }
 
-        // Process next task
-        setTimeout(() => this.processQueue(), task.pause || 100);
+        // Process next task with dynamic delay
+        const delay = task.nextDelay || task.pause || 100;
+        setTimeout(() => this.processQueue(), delay);
+    }
+
+    /**
+     * Skip current typing animation
+     */
+    skip() {
+        if (this.currentTask && this.currentTask.canSkip !== false) {
+            this.currentTask.skip = true;
+        }
+    }
+
+    /**
+     * Set typing speed for next operations
+     * @param {number} speed - Milliseconds per character
+     */
+    setSpeed(speed) {
+        this.defaultSpeed = speed;
+        return this;
     }
 
     /**
@@ -69,11 +113,20 @@ class Typewriter {
     }
 
     /**
-     * Type text with character-by-character animation
+     * Type text with character-by-character animation (Enhanced)
      * @param {Object} task - Typing task
      */
     async typeText(task) {
-        const { element, text, speed = this.defaultSpeed, cursor = true, sound = false } = task;
+        const { 
+            element, 
+            text, 
+            speed = this.defaultSpeed, 
+            cursor = true, 
+            sound = false,
+            variableSpeed = true,
+            corrections = false,
+            htmlSupport = false
+        } = task;
         
         if (typeof element === 'string') {
             task.element = document.querySelector(element);
@@ -92,19 +145,56 @@ class Typewriter {
             task.element.classList.add('typing-cursor');
         }
 
-        // Type each character
+        // Enhanced typing with realistic variations
         for (let i = 0; i <= text.length; i++) {
+            // Check for skip
+            if (task.skip) {
+                task.element.textContent = text;
+                break;
+            }
+
             const currentText = text.substring(0, i);
-            task.element.textContent = currentText;
             
-            // Play typing sound
-            if (sound) {
-                this.playTypingSound();
+            if (htmlSupport) {
+                task.element.innerHTML = currentText;
+            } else {
+                task.element.textContent = currentText;
+            }
+            
+            // Simulate typing errors and corrections
+            if (corrections && Math.random() < 0.02 && i < text.length - 1) {
+                // Type wrong character
+                const wrongChar = String.fromCharCode(97 + Math.floor(Math.random() * 26));
+                task.element.textContent = currentText + wrongChar;
+                await Utils.delay(speed * 2);
+                
+                // Backspace
+                task.element.textContent = currentText;
+                await Utils.delay(speed);
+            }
+            
+            // Play typing sound with variation
+            if (sound && Math.random() < 0.8) {
+                this.playTypingSound(0.01 + Math.random() * 0.02);
             }
             
             // Variable typing speed for realism
-            const delay = speed + (Math.random() * 20 - 10);
-            await Utils.delay(delay);
+            let delay = speed;
+            if (variableSpeed) {
+                // Slower after punctuation, faster for common letters
+                const char = text[i - 1];
+                if (char === '.' || char === '!' || char === '?') {
+                    delay = speed * 3;
+                } else if (char === ',' || char === ';') {
+                    delay = speed * 2;
+                } else if (char === ' ') {
+                    delay = speed * 0.5;
+                } else {
+                    delay = speed + (Math.random() * 30 - 15);
+                }
+            }
+            
+            await Utils.delay(Math.max(10, delay));
         }
 
         // Remove cursor
@@ -353,9 +443,10 @@ class Typewriter {
     }
 
     /**
-     * Play typing sound effect
+     * Play enhanced typing sound effect
+     * @param {number} volume - Sound volume (0-1)
      */
-    playTypingSound() {
+    playTypingSound(volume = 0.01) {
         try {
             const audioContext = new (window.AudioContext || window.webkitAudioContext)();
             const oscillator = audioContext.createOscillator();
@@ -364,15 +455,92 @@ class Typewriter {
             oscillator.connect(gainNode);
             gainNode.connect(audioContext.destination);
             
-            oscillator.frequency.setValueAtTime(800 + Math.random() * 200, audioContext.currentTime);
-            gainNode.gain.setValueAtTime(0.01, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.1);
+            // Vary frequency for different key sounds
+            const baseFreq = 800 + Math.random() * 400;
+            oscillator.frequency.setValueAtTime(baseFreq, audioContext.currentTime);
+            
+            gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.08);
             
             oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.1);
+            oscillator.stop(audioContext.currentTime + 0.08);
         } catch (e) {
             // Audio not supported or blocked
         }
+    }
+
+    /**
+     * Type multiple lines with automatic paragraph breaks
+     * @param {Array} lines - Array of strings or line objects
+     * @param {Element|string} container - Container element
+     * @param {Object} options - Typing options
+     */
+    async typeMultipleLines(lines, container, options = {}) {
+        if (typeof container === 'string') {
+            container = document.querySelector(container);
+        }
+        
+        if (!container) return;
+
+        for (let i = 0; i < lines.length; i++) {
+            const line = typeof lines[i] === 'string' ? { text: lines[i] } : lines[i];
+            
+            const lineElement = document.createElement('div');
+            lineElement.className = line.className || 'terminal-line';
+            container.appendChild(lineElement);
+            
+            await this.type(lineElement, line.text, {
+                speed: line.speed || options.speed || this.defaultSpeed,
+                cursor: line.cursor !== false,
+                sound: line.sound || options.sound,
+                variableSpeed: line.variableSpeed !== false,
+                corrections: line.corrections || options.corrections
+            });
+            
+            // Scroll into view
+            lineElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            
+            await Utils.delay(line.pause || options.linePause || 200);
+        }
+    }
+
+    /**
+     * Type with dramatic pauses for storytelling
+     * @param {Element|string} element - Target element
+     * @param {string} text - Text to type
+     * @param {Object} options - Options including pause markers
+     */
+    async typeDramatic(element, text, options = {}) {
+        const pauseMarker = options.pauseMarker || '...';
+        const shortPause = options.shortPause || 500;
+        const longPause = options.longPause || 1500;
+        
+        const segments = text.split(pauseMarker);
+        
+        for (let i = 0; i < segments.length; i++) {
+            await this.type(element, segments[i], {
+                ...options,
+                cursor: i === segments.length - 1 // Only show cursor on last segment
+            });
+            
+            if (i < segments.length - 1) {
+                await Utils.delay(text.includes('...') ? longPause : shortPause);
+            }
+        }
+    }
+
+    /**
+     * Pause all typing operations
+     */
+    pause() {
+        this.isPaused = true;
+    }
+
+    /**
+     * Resume typing operations
+     */
+    resume() {
+        this.isPaused = false;
     }
 
     /**

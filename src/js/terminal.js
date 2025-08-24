@@ -45,23 +45,39 @@ class Terminal {
         this.currentDirectory = '/home/user';
         this.commandHistory = [];
         this.historyIndex = -1;
+        this.maxHistory = 100;
+        this.maxOutputLines = 1000;
         this.fileSystem = this.initializeFileSystem();
         this.gameState = {
             level: 1,
             score: 0,
             hintsUsed: 0,
             foundSecrets: [],
-            unlockedAreas: ['home']
+            unlockedAreas: ['home'],
+            achievements: [],
+            sessionStart: Date.now()
         };
+        
+        // Advanced terminal state
+        this.currentTheme = 'dystopian-noir';
+        this.soundEnabled = false;
+        this.animations = true;
+        this.autoSave = true;
+        
+        // Command state tracking
+        this.lastCommand = '';
+        this.commandCount = 0;
+        this.errorCount = 0;
     }
 
     /**
-     * Initialize event listeners
+     * Initialize event listeners (Enhanced)
      */
     initializeEventListeners() {
-        // Input handling
+        // Input handling with advanced features
         this.input.addEventListener('keydown', (e) => this.handleKeyDown(e));
         this.input.addEventListener('input', (e) => this.handleInput(e));
+        this.input.addEventListener('paste', (e) => this.handlePaste(e));
         
         // Terminal click focus
         this.terminal.addEventListener('click', () => this.focusInput());
@@ -70,18 +86,184 @@ class Terminal {
         window.addEventListener('focus', () => this.onWindowFocus());
         window.addEventListener('blur', () => this.onWindowBlur());
         
-        // Prevent context menu for immersion
-        this.terminal.addEventListener('contextmenu', (e) => e.preventDefault());
+        // Prevent context menu for immersion (optional right-click menu later)
+        this.terminal.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            this.showContextMenu(e);
+        });
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => this.handleGlobalKeyDown(e));
+        
+        // Auto-save game state
+        if (this.autoSave) {
+            setInterval(() => this.saveState(), 30000); // Save every 30 seconds
+        }
+        
+        // Dynamic prompt updates
+        setInterval(() => this.updatePrompt(), 1000);
     }
 
     /**
-     * Initialize command history from storage
+     * Handle global keyboard shortcuts
+     * @param {KeyboardEvent} e - Keyboard event
+     */
+    handleGlobalKeyDown(e) {
+        // Ctrl+Alt+C - Clear screen
+        if (e.ctrlKey && e.altKey && e.key === 'c') {
+            e.preventDefault();
+            this.clearScreen();
+        }
+        
+        // Ctrl+Alt+T - Toggle theme
+        if (e.ctrlKey && e.altKey && e.key === 't') {
+            e.preventDefault();
+            this.executeCommand('theme next');
+        }
+        
+        // Ctrl+Alt+M - Toggle matrix
+        if (e.ctrlKey && e.altKey && e.key === 'm') {
+            e.preventDefault();
+            this.executeCommand('matrix');
+        }
+        
+        // Escape - Focus terminal
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            this.focusInput();
+        }
+    }
+
+    /**
+     * Handle paste events
+     * @param {ClipboardEvent} e - Paste event
+     */
+    handlePaste(e) {
+        e.preventDefault();
+        const paste = (e.clipboardData || window.clipboardData).getData('text');
+        
+        // Security: limit paste length and clean content
+        const cleanPaste = paste.substring(0, 500).replace(/[\r\n]/g, ' ');
+        
+        this.input.value += cleanPaste;
+        this.typeMessage('Pasted content from clipboard', 'info');
+    }
+
+    /**
+     * Show context menu (future feature)
+     * @param {MouseEvent} e - Mouse event
+     */
+    showContextMenu(e) {
+        // Placeholder for future context menu implementation
+        // Could include: Copy, Paste, Clear, Theme selection, etc.
+    }
+
+    /**
+     * Initialize command history from storage (Enhanced)
      */
     initializeHistory() {
         const stored = Utils.storage('terminalHistory');
-        if (stored && Array.isArray(stored)) {
-            this.commandHistory = stored.slice(-50); // Keep last 50 commands
+        if (stored) {
+            if (Array.isArray(stored)) {
+                // Legacy format
+                this.commandHistory = stored.slice(-50);
+            } else if (stored.commands) {
+                // New format with metadata
+                this.commandHistory = stored.commands.slice(-50);
+            }
         }
+    }
+
+    /**
+     * Save current terminal state
+     */
+    saveState() {
+        if (!this.autoSave) return;
+        
+        const state = {
+            gameState: this.gameState,
+            currentDirectory: this.currentDirectory,
+            currentUser: this.currentUser,
+            currentTheme: this.currentTheme,
+            settings: {
+                soundEnabled: this.soundEnabled,
+                animations: this.animations,
+                autoSave: this.autoSave
+            },
+            stats: {
+                commandCount: this.commandCount,
+                errorCount: this.errorCount,
+                sessionStart: this.gameState.sessionStart,
+                lastActive: Date.now()
+            }
+        };
+        
+        Utils.storage('terminalState', state);
+    }
+
+    /**
+     * Load saved terminal state
+     */
+    loadState() {
+        const state = Utils.storage('terminalState');
+        if (!state) return;
+        
+        if (state.gameState) {
+            this.gameState = { ...this.gameState, ...state.gameState };
+        }
+        
+        if (state.currentDirectory) {
+            this.currentDirectory = state.currentDirectory;
+        }
+        
+        if (state.currentUser) {
+            this.currentUser = state.currentUser;
+        }
+        
+        if (state.settings) {
+            this.soundEnabled = state.settings.soundEnabled || false;
+            this.animations = state.settings.animations !== false;
+            this.autoSave = state.settings.autoSave !== false;
+        }
+        
+        if (state.stats) {
+            this.commandCount = state.stats.commandCount || 0;
+            this.errorCount = state.stats.errorCount || 0;
+        }
+    }
+
+    /**
+     * Get terminal statistics
+     */
+    getStats() {
+        const sessionTime = Date.now() - this.gameState.sessionStart;
+        
+        return {
+            commandCount: this.commandCount,
+            errorCount: this.errorCount,
+            successRate: this.commandCount > 0 ? ((this.commandCount - this.errorCount) / this.commandCount * 100).toFixed(1) : 100,
+            sessionTime: Math.floor(sessionTime / 1000),
+            averageCommandTime: this.commandCount > 0 ? Math.floor(sessionTime / this.commandCount / 1000) : 0,
+            hintsUsed: this.gameState.hintsUsed,
+            secretsFound: this.gameState.foundSecrets.length,
+            score: this.gameState.score,
+            level: this.gameState.level
+        };
+    }
+
+    /**
+     * Toggle terminal features
+     */
+    toggleSound() {
+        this.soundEnabled = !this.soundEnabled;
+        this.typeMessage(`Sound ${this.soundEnabled ? 'enabled' : 'disabled'}`, 'info');
+        this.saveState();
+    }
+
+    toggleAnimations() {
+        this.animations = !this.animations;
+        this.typeMessage(`Animations ${this.animations ? 'enabled' : 'disabled'}`, 'info');
+        this.saveState();
     }
 
     /**
@@ -133,7 +315,7 @@ class Terminal {
     }
 
     /**
-     * Type message with animation
+     * Type message with animation (Enhanced with memory management)
      * @param {string} message - Message to type
      * @param {string} type - Message type (system, error, success, info)
      */
@@ -141,34 +323,93 @@ class Terminal {
         const line = document.createElement('div');
         line.className = `terminal-line terminal-${type}`;
         
+        // Add timestamp for system messages
+        if (type === 'system' || type === 'error') {
+            const timestamp = new Date().toLocaleTimeString();
+            line.setAttribute('data-timestamp', timestamp);
+        }
+        
         if (message === '') {
             line.innerHTML = '&nbsp;';
             this.output.appendChild(line);
+            this.manageLinesMemory();
             this.scrollToBottom();
             return;
         }
 
         this.output.appendChild(line);
+        this.manageLinesMemory();
         
-        // Type character by character for important messages
+        // Enhanced typing based on message type
         if (type === 'system' || type === 'story') {
-            for (let i = 0; i < message.length; i++) {
-                line.textContent = message.substring(0, i + 1);
-                await Utils.delay(20 + Math.random() * 10);
-                this.scrollToBottom();
+            // Use enhanced typewriter for dramatic effect
+            if (window.typewriter) {
+                await window.typewriter.type(line, message, {
+                    speed: 20 + Math.random() * 15,
+                    cursor: true,
+                    variableSpeed: true,
+                    sound: this.soundEnabled
+                });
+            } else {
+                // Fallback typing
+                for (let i = 0; i < message.length; i++) {
+                    line.textContent = message.substring(0, i + 1);
+                    await Utils.delay(20 + Math.random() * 10);
+                    this.scrollToBottom();
+                }
             }
+        } else if (type === 'error') {
+            // Quick red flash for errors
+            line.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
+            line.textContent = message;
+            setTimeout(() => {
+                line.style.backgroundColor = '';
+            }, 200);
+            this.errorCount++;
         } else {
+            // Instant for regular output
             line.textContent = message;
             this.scrollToBottom();
         }
     }
 
     /**
-     * Handle key down events
+     * Manage terminal output lines to prevent memory issues
+     */
+    manageLinesMemory() {
+        const lines = this.output.children;
+        
+        if (lines.length > this.maxOutputLines) {
+            // Remove oldest lines, but keep important ones
+            const linesToRemove = lines.length - this.maxOutputLines;
+            
+            for (let i = 0; i < linesToRemove; i++) {
+                const line = lines[0];
+                
+                // Keep system messages and errors
+                if (!line.classList.contains('terminal-system') && 
+                    !line.classList.contains('terminal-error')) {
+                    line.remove();
+                } else if (i < linesToRemove / 2) {
+                    // Remove some system messages if we have too many
+                    line.remove();
+                }
+            }
+        }
+    }
+
+    /**
+     * Handle key down events (Enhanced)
      * @param {KeyboardEvent} e - Keyboard event
      */
     handleKeyDown(e) {
-        if (this.isBooting || this.isLocked) return;
+        if (this.isBooting || this.isLocked) {
+            // Allow Ctrl+C even during boot/lock
+            if (e.ctrlKey && e.key === 'c') {
+                this.interrupt();
+            }
+            return;
+        }
 
         switch (e.key) {
             case 'Enter':
@@ -191,12 +432,94 @@ class Terminal {
                 this.autocomplete();
                 break;
                 
+            case 'Home':
+                e.preventDefault();
+                this.input.setSelectionRange(0, 0);
+                break;
+                
+            case 'End':
+                e.preventDefault();
+                this.input.setSelectionRange(this.input.value.length, this.input.value.length);
+                break;
+                
+            // Keyboard shortcuts
             case 'l':
                 if (e.ctrlKey) {
                     e.preventDefault();
                     this.clearScreen();
                 }
                 break;
+                
+            case 'c':
+                if (e.ctrlKey) {
+                    e.preventDefault();
+                    this.interrupt();
+                }
+                break;
+                
+            case 'u':
+                if (e.ctrlKey) {
+                    e.preventDefault();
+                    this.input.value = '';
+                }
+                break;
+                
+            case 'k':
+                if (e.ctrlKey) {
+                    e.preventDefault();
+                    this.input.value = this.input.value.substring(0, this.input.selectionStart);
+                }
+                break;
+                
+            case 'a':
+                if (e.ctrlKey) {
+                    e.preventDefault();
+                    this.input.setSelectionRange(0, 0);
+                }
+                break;
+                
+            case 'e':
+                if (e.ctrlKey) {
+                    e.preventDefault();
+                    this.input.setSelectionRange(this.input.value.length, this.input.value.length);
+                }
+                break;
+                
+            case 'w':
+                if (e.ctrlKey) {
+                    e.preventDefault();
+                    this.deleteLastWord();
+                }
+                break;
+        }
+    }
+
+    /**
+     * Interrupt current operation (Ctrl+C)
+     */
+    interrupt() {
+        this.typeMessage('^C', 'error');
+        this.input.value = '';
+        this.isLocked = false;
+        this.focusInput();
+        
+        // Stop any running typewriter operations
+        if (window.typewriter) {
+            window.typewriter.skip();
+        }
+    }
+
+    /**
+     * Delete last word from input (Ctrl+W)
+     */
+    deleteLastWord() {
+        const value = this.input.value;
+        const words = value.split(' ');
+        if (words.length > 1) {
+            words.pop();
+            this.input.value = words.join(' ') + ' ';
+        } else {
+            this.input.value = '';
         }
     }
 
@@ -253,26 +576,43 @@ class Terminal {
     }
 
     /**
-     * Add command to history
+     * Add command to history (Enhanced)
      * @param {string} command - Command to add
      */
     addToHistory(command) {
+        // Don't add empty commands or duplicates
+        if (!command.trim() || this.commandHistory[this.commandHistory.length - 1] === command) {
+            return;
+        }
+        
         this.commandHistory.push(command);
+        this.commandCount++;
+        
+        // Limit history size
+        if (this.commandHistory.length > this.maxHistory) {
+            this.commandHistory.shift();
+        }
+        
         this.historyIndex = this.commandHistory.length;
         
-        // Save to storage
-        Utils.storage('terminalHistory', this.commandHistory.slice(-50));
+        // Save to storage with timestamp
+        Utils.storage('terminalHistory', {
+            commands: this.commandHistory.slice(-50),
+            lastSession: Date.now()
+        });
     }
 
     /**
-     * Navigate command history
+     * Navigate command history (Enhanced)
      * @param {number} direction - Direction (-1 for up, 1 for down)
      */
     navigateHistory(direction) {
         if (this.commandHistory.length === 0) return;
 
+        const previousIndex = this.historyIndex;
         this.historyIndex += direction;
         
+        // Boundary checks
         if (this.historyIndex < 0) {
             this.historyIndex = 0;
         } else if (this.historyIndex >= this.commandHistory.length) {
@@ -281,24 +621,237 @@ class Terminal {
             return;
         }
 
-        this.input.value = this.commandHistory[this.historyIndex] || '';
+        // Visual feedback for history navigation
+        if (this.historyIndex !== previousIndex) {
+            this.input.value = this.commandHistory[this.historyIndex] || '';
+            
+            // Show history indicator briefly
+            if (this.commandHistory.length > 1) {
+                this.showHistoryIndicator();
+            }
+        }
     }
 
     /**
-     * Basic autocomplete
+     * Show history navigation indicator
+     */
+    showHistoryIndicator() {
+        // Create temporary indicator
+        const indicator = document.createElement('span');
+        indicator.className = 'history-indicator';
+        indicator.textContent = `[${this.historyIndex + 1}/${this.commandHistory.length}]`;
+        indicator.style.cssText = 'position: absolute; right: 10px; color: var(--secondary-color); font-size: 0.8em; opacity: 0.7;';
+        
+        this.inputContainer.style.position = 'relative';
+        this.inputContainer.appendChild(indicator);
+        
+        // Remove after 1 second
+        setTimeout(() => {
+            if (indicator.parentNode) {
+                indicator.parentNode.removeChild(indicator);
+            }
+        }, 1000);
+    }
+
+    /**
+     * Enhanced autocomplete with smart suggestions
      */
     autocomplete() {
-        const input = this.input.value;
-        if (!input) return;
+        const input = this.input.value.trim();
+        const cursorPos = this.input.selectionStart;
+        const beforeCursor = input.substring(0, cursorPos);
+        const afterCursor = input.substring(cursorPos);
+        
+        // Split into words to get current word being typed
+        const words = beforeCursor.split(' ');
+        const currentWord = words[words.length - 1];
+        
+        if (words.length === 1) {
+            // Command completion
+            this.autocompleteCommand(currentWord, afterCursor);
+        } else {
+            // Argument completion
+            this.autocompleteArgument(words[0], currentWord, words.length - 1);
+        }
+    }
 
+    /**
+     * Autocomplete command names
+     * @param {string} partial - Partial command
+     * @param {string} afterCursor - Text after cursor
+     */
+    autocompleteCommand(partial, afterCursor) {
         const commands = Object.keys(Commands || {});
-        const matches = commands.filter(cmd => cmd.startsWith(input.toLowerCase()));
+        const matches = commands.filter(cmd => cmd.startsWith(partial.toLowerCase()));
         
         if (matches.length === 1) {
-            this.input.value = matches[0];
+            // Single match - complete it
+            const completion = matches[0].substring(partial.length);
+            this.input.value = matches[0] + (afterCursor ? ' ' + afterCursor : ' ');
+            this.input.setSelectionRange(matches[0].length + 1, matches[0].length + 1);
         } else if (matches.length > 1) {
-            this.typeMessage(`Available: ${matches.join(', ')}`, 'info');
+            // Multiple matches - show them
+            this.typeMessage(`Suggestions: ${matches.join(', ')}`, 'info');
+            
+            // Find common prefix
+            const commonPrefix = this.findCommonPrefix(matches);
+            if (commonPrefix.length > partial.length) {
+                this.input.value = commonPrefix + afterCursor;
+                this.input.setSelectionRange(commonPrefix.length, commonPrefix.length);
+            }
+        } else if (partial.length > 0) {
+            // No matches - suggest similar commands
+            const suggestions = this.findSimilarCommands(partial, commands);
+            if (suggestions.length > 0) {
+                this.typeMessage(`Did you mean: ${suggestions.join(', ')}?`, 'info');
+            }
         }
+    }
+
+    /**
+     * Autocomplete command arguments
+     * @param {string} command - Command name
+     * @param {string} partial - Partial argument
+     * @param {number} argIndex - Argument index
+     */
+    autocompleteArgument(command, partial, argIndex) {
+        switch (command.toLowerCase()) {
+            case 'ls':
+            case 'cd':
+                this.autocompleteDirectory(partial);
+                break;
+            case 'cat':
+                this.autocompleteFile(partial);
+                break;
+            case 'cipher':
+                if (argIndex === 1) {
+                    const methods = ['caesar', 'hex2ascii', 'ascii2hex', 'base64enc', 'base64dec'];
+                    this.autocompleteFromList(partial, methods);
+                }
+                break;
+            case 'theme':
+                const themes = ['dystopian-noir', 'synthwave', 'acid-burn', 'ghost-shell', 'digital-decay'];
+                this.autocompleteFromList(partial, themes);
+                break;
+            default:
+                // Generic file/directory completion
+                this.autocompleteFile(partial);
+        }
+    }
+
+    /**
+     * Autocomplete from a list of options
+     * @param {string} partial - Partial input
+     * @param {Array} options - Available options
+     */
+    autocompleteFromList(partial, options) {
+        const matches = options.filter(opt => opt.startsWith(partial.toLowerCase()));
+        
+        if (matches.length === 1) {
+            const currentInput = this.input.value;
+            const words = currentInput.split(' ');
+            words[words.length - 1] = matches[0];
+            this.input.value = words.join(' ') + ' ';
+        } else if (matches.length > 1) {
+            this.typeMessage(`Options: ${matches.join(', ')}`, 'info');
+        }
+    }
+
+    /**
+     * Autocomplete directory names
+     * @param {string} partial - Partial directory name
+     */
+    autocompleteDirectory(partial) {
+        const contents = this.getCurrentDirectoryContents();
+        if (!contents) return;
+        
+        const dirs = Object.keys(contents).filter(name => 
+            contents[name].type === 'directory' && name.startsWith(partial)
+        );
+        
+        this.autocompleteFromList(partial, dirs);
+    }
+
+    /**
+     * Autocomplete file names
+     * @param {string} partial - Partial file name
+     */
+    autocompleteFile(partial) {
+        const contents = this.getCurrentDirectoryContents();
+        if (!contents) return;
+        
+        const files = Object.keys(contents).filter(name => 
+            name.startsWith(partial)
+        );
+        
+        this.autocompleteFromList(partial, files);
+    }
+
+    /**
+     * Find common prefix of strings
+     * @param {Array} strings - Array of strings
+     * @returns {string} Common prefix
+     */
+    findCommonPrefix(strings) {
+        if (strings.length === 0) return '';
+        
+        let prefix = strings[0];
+        for (let i = 1; i < strings.length; i++) {
+            while (strings[i].indexOf(prefix) !== 0) {
+                prefix = prefix.substring(0, prefix.length - 1);
+                if (prefix === '') return '';
+            }
+        }
+        return prefix;
+    }
+
+    /**
+     * Find similar commands using simple string distance
+     * @param {string} input - Input string
+     * @param {Array} commands - Available commands
+     * @returns {Array} Similar commands
+     */
+    findSimilarCommands(input, commands) {
+        return commands
+            .map(cmd => ({ cmd, distance: this.levenshteinDistance(input, cmd) }))
+            .filter(item => item.distance <= 2)
+            .sort((a, b) => a.distance - b.distance)
+            .slice(0, 3)
+            .map(item => item.cmd);
+    }
+
+    /**
+     * Calculate Levenshtein distance between two strings
+     * @param {string} a - First string
+     * @param {string} b - Second string
+     * @returns {number} Distance
+     */
+    levenshteinDistance(a, b) {
+        const matrix = [];
+        
+        for (let i = 0; i <= b.length; i++) {
+            matrix[i] = [i];
+        }
+        
+        for (let j = 0; j <= a.length; j++) {
+            matrix[0][j] = j;
+        }
+        
+        for (let i = 1; i <= b.length; i++) {
+            for (let j = 1; j <= a.length; j++) {
+                if (b.charAt(i - 1) === a.charAt(j - 1)) {
+                    matrix[i][j] = matrix[i - 1][j - 1];
+                } else {
+                    matrix[i][j] = Math.min(
+                        matrix[i - 1][j - 1] + 1,
+                        matrix[i][j - 1] + 1,
+                        matrix[i - 1][j] + 1
+                    );
+                }
+            }
+        }
+        
+        return matrix[b.length][a.length];
     }
 
     /**

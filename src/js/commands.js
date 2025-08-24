@@ -6,12 +6,18 @@ const Commands = {
      * Display help information
      */
     help: async function(terminal, args) {
+        if (args[0]) {
+            // Show help for specific command
+            return await Commands.helpCommand(terminal, args[0]);
+        }
+        
         const helpText = [
             'GRID TERMINAL COMMANDS:',
             '',
             'BASIC COMMANDS:',
-            '  help                    - Show this help',
+            '  help [command]          - Show this help or help for specific command',
             '  clear                   - Clear the terminal',
+            '  history                 - Show command history',
             '  ls [directory]          - List directory contents',
             '  cat <file>              - Display file contents',
             '  cd <directory>          - Change directory',
@@ -24,6 +30,8 @@ const Commands = {
             '  processes               - List running processes',
             '  memory                  - Display memory usage',
             '  network                 - Show network information',
+            '  about                   - Project information and credits',
+            '  stats                   - Show terminal statistics',
             '',
             'GAME COMMANDS:',
             '  tutorial                - Start interactive tutorial',
@@ -31,6 +39,11 @@ const Commands = {
             '  hint                    - Get a hint for current puzzle',
             '  inventory               - Show your items',
             '  score                   - Display current score',
+            '',
+            'CUSTOMIZATION:',
+            '  theme [name]            - Switch color theme or list themes',
+            '  sound                   - Toggle sound effects',
+            '  animations              - Toggle animations',
             '',
             'TOOLS:',
             '  cipher <text>           - Encrypt/decrypt text',
@@ -44,6 +57,14 @@ const Commands = {
             '  glitch                  - System diagnostic',
             '  secrets                 - Show found secrets',
             '  admin                   - Administrative access (if authorized)',
+            '  konami                  - Enter famous code sequence',
+            '',
+            'SHORTCUTS:',
+            '  Ctrl+L                  - Clear screen',
+            '  Ctrl+C                  - Interrupt operation',
+            '  Ctrl+U                  - Clear input line',
+            '  Up/Down Arrows          - Navigate command history',
+            '  Tab                     - Autocomplete commands',
             ''
         ];
 
@@ -53,10 +74,189 @@ const Commands = {
     },
 
     /**
+     * Show help for specific command
+     */
+    helpCommand: async function(terminal, command) {
+        const helpTexts = {
+            help: 'help [command] - Display general help or specific command help',
+            clear: 'clear - Clear all terminal output',
+            history: 'history [clear] - Show command history or clear it',
+            ls: 'ls [directory] - List contents of current or specified directory',
+            cat: 'cat <file> - Display the contents of a file',
+            cd: 'cd <directory> - Change to specified directory (.. for parent)',
+            pwd: 'pwd - Print current working directory',
+            whoami: 'whoami - Display current username',
+            date: 'date - Show current date and time in cyber format',
+            status: 'status - Display current system status and statistics',
+            theme: 'theme [name] - Change visual theme or list available themes',
+            cipher: 'cipher <method> <text> - Encrypt/decrypt text using various methods',
+            matrix: 'matrix - Toggle Matrix rain visual effect',
+            admin: 'admin - Attempt to access administrative functions'
+        };
+        
+        if (helpTexts[command]) {
+            await terminal.typeMessage(`${command.toUpperCase()}:`, 'info');
+            await terminal.typeMessage(`  ${helpTexts[command]}`, 'output');
+        } else {
+            await terminal.typeMessage(`No help available for command: ${command}`, 'error');
+            await terminal.typeMessage('Type "help" to see all available commands.', 'info');
+        }
+    },
+
+    /**
      * Clear terminal screen
      */
     clear: async function(terminal, args) {
         terminal.clearScreen();
+    },
+
+    /**
+     * Show or manage command history
+     */
+    history: async function(terminal, args) {
+        if (args[0] === 'clear') {
+            terminal.history = [];
+            await terminal.typeMessage('Command history cleared.', 'success');
+            return;
+        }
+
+        const history = terminal.history;
+        if (history.length === 0) {
+            await terminal.typeMessage('No command history available.', 'info');
+            return;
+        }
+
+        await terminal.typeMessage('COMMAND HISTORY:', 'info');
+        await terminal.typeMessage('', 'output');
+        
+        for (let i = 0; i < history.length; i++) {
+            const cmd = history[i];
+            const index = (i + 1).toString().padStart(3, ' ');
+            await terminal.typeMessage(`${index}  ${cmd}`, 'output');
+        }
+        
+        await terminal.typeMessage('', 'output');
+        await terminal.typeMessage(`Total commands: ${history.length}`, 'info');
+    },
+
+    /**
+     * Theme switching command
+     */
+    theme: async function(terminal, args) {
+        const themes = [
+            'default', 'matrix', 'amber', 'green', 'blue', 'purple', 'red', 'cyan'
+        ];
+
+        if (!args[0]) {
+            await terminal.typeMessage('AVAILABLE THEMES:', 'info');
+            await terminal.typeMessage('', 'output');
+            for (const theme of themes) {
+                const current = terminal.currentTheme === theme ? ' [CURRENT]' : '';
+                await terminal.typeMessage(`  ${theme}${current}`, 'output');
+            }
+            await terminal.typeMessage('', 'output');
+            await terminal.typeMessage('Usage: theme <name>', 'info');
+            return;
+        }
+
+        const themeName = args[0].toLowerCase();
+        if (!themes.includes(themeName)) {
+            await terminal.typeMessage(`Unknown theme: ${themeName}`, 'error');
+            await terminal.typeMessage('Use "theme" to see available themes.', 'info');
+            return;
+        }
+
+        // Apply theme
+        terminal.currentTheme = themeName;
+        document.documentElement.setAttribute('data-theme', themeName);
+        
+        // Store in localStorage
+        localStorage.setItem('terminal-theme', themeName);
+        
+        await terminal.typeMessage(`Theme changed to: ${themeName}`, 'success');
+    },
+
+    /**
+     * About command with project info
+     */
+    about: async function(terminal) {
+        const aboutText = [
+            '╔════════════════════════════════════════════════════════════════╗',
+            '║                    RETRO CYBER TERMINAL v2.1                  ║',
+            '╠════════════════════════════════════════════════════════════════╣',
+            '║ A nostalgic journey into retro-futuristic computing            ║',
+            '║                                                                ║',
+            '║ Features:                                                      ║',
+            '║ • Authentic CRT monitor simulation                             ║',
+            '║ • Matrix-style digital rain effects                           ║',
+            '║ • Interactive terminal with full command system               ║',
+            '║ • Built-in puzzles and cipher tools                           ║',
+            '║ • Customizable themes and visual effects                      ║',
+            '║                                                                ║',
+            '║ Technologies:                                                  ║',
+            '║ • Pure JavaScript (ES6+)                                      ║',
+            '║ • CSS3 animations and effects                                 ║',
+            '║ • Web Audio API for retro sounds                             ║',
+            '║ • Local storage for persistence                               ║',
+            '║                                                                ║',
+            '║ Created with ❤️ for retro computing enthusiasts               ║',
+            '╚════════════════════════════════════════════════════════════════╝'
+        ];
+
+        for (const line of aboutText) {
+            await terminal.typeMessage(line, 'info');
+        }
+        
+        await terminal.typeMessage('', 'output');
+        await terminal.typeMessage('Type "help" to explore available commands.', 'info');
+    },
+
+    /**
+     * Show terminal statistics
+     */
+    stats: async function(terminal) {
+        const stats = terminal.getStats();
+        const uptime = Date.now() - terminal.sessionStart;
+        const uptimeStr = Utils.formatTime(uptime);
+        
+        await terminal.typeMessage('TERMINAL STATISTICS:', 'info');
+        await terminal.typeMessage('', 'output');
+        await terminal.typeMessage(`Session uptime:     ${uptimeStr}`, 'output');
+        await terminal.typeMessage(`Commands executed:  ${stats.commandsExecuted}`, 'output');
+        await terminal.typeMessage(`Lines output:       ${stats.linesOutput}`, 'output');
+        await terminal.typeMessage(`Current theme:      ${terminal.currentTheme}`, 'output');
+        await terminal.typeMessage(`Sound effects:      ${terminal.soundEnabled ? 'Enabled' : 'Disabled'}`, 'output');
+        await terminal.typeMessage(`Animations:         ${terminal.animationsEnabled ? 'Enabled' : 'Disabled'}`, 'output');
+        await terminal.typeMessage(`Autocomplete:       ${terminal.autocompleteEnabled ? 'Enabled' : 'Disabled'}`, 'output');
+        await terminal.typeMessage(`Memory usage:       ${stats.outputLines}/${terminal.maxOutputLines} lines`, 'output');
+    },
+
+    /**
+     * Toggle sound effects
+     */
+    sound: async function(terminal) {
+        terminal.soundEnabled = !terminal.soundEnabled;
+        localStorage.setItem('terminal-sound', terminal.soundEnabled);
+        
+        const status = terminal.soundEnabled ? 'enabled' : 'disabled';
+        await terminal.typeMessage(`Sound effects ${status}.`, 'success');
+    },
+
+    /**
+     * Toggle animations
+     */
+    animations: async function(terminal) {
+        terminal.animationsEnabled = !terminal.animationsEnabled;
+        localStorage.setItem('terminal-animations', terminal.animationsEnabled);
+        
+        // Apply to document
+        document.documentElement.style.setProperty(
+            '--animation-speed', 
+            terminal.animationsEnabled ? '1' : '0'
+        );
+        
+        const status = terminal.animationsEnabled ? 'enabled' : 'disabled';
+        await terminal.typeMessage(`Animations ${status}.`, 'success');
     },
 
     /**
@@ -502,6 +702,45 @@ const Commands = {
                         await terminal.typeMessage(`✓ ${secret}`, 'success');
                 }
             }
+        }
+    },
+
+    /**
+     * Konami code easter egg
+     */
+    konami: async function(terminal) {
+        const konamiArt = [
+            '██╗  ██╗ ██████╗ ███╗   ██╗ █████╗ ███╗   ███╗██╗',
+            '██║ ██╔╝██╔═══██╗████╗  ██║██╔══██╗████╗ ████║██║',
+            '█████╔╝ ██║   ██║██╔██╗ ██║███████║██╔████╔██║██║',
+            '██╔═██╗ ██║   ██║██║╚██╗██║██╔══██║██║╚██╔╝██║██║',
+            '██║  ██╗╚██████╔╝██║ ╚████║██║  ██║██║ ╚═╝ ██║██║',
+            '╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝  ╚═╝╚═╝     ╚═╝╚═╝',
+            '',
+            '    C O D E   A C T I V A T E D',
+            '',
+            '↑ ↑ ↓ ↓ ← → ← → B A'
+        ];
+        
+        await terminal.typeMessage('KONAMI CODE SEQUENCE INITIATED...', 'info');
+        await terminal.typeMessage('', 'output');
+        
+        for (const line of konamiArt) {
+            await terminal.typeMessage(line, 'success');
+        }
+        
+        await terminal.typeMessage('', 'output');
+        await terminal.typeMessage('★ ACHIEVEMENT UNLOCKED: Nostalgic Gamer ★', 'success');
+        await terminal.typeMessage('You remember the classics!', 'info');
+        
+        // Add to game state
+        if (!terminal.gameState.achievements) {
+            terminal.gameState.achievements = [];
+        }
+        if (!terminal.gameState.achievements.includes('konami_code')) {
+            terminal.gameState.achievements.push('konami_code');
+            terminal.gameState.score += 100;
+            await terminal.typeMessage('+100 points awarded!', 'success');
         }
     },
 
