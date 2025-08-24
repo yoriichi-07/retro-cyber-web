@@ -1,1 +1,0 @@
-console.log("Testing puzzle system..."); setTimeout(() => { if (window.app && window.app.terminal) { window.app.terminal.executeCommand("puzzle"); setTimeout(() => window.app.terminal.executeCommand("hint"), 2000); setTimeout(() => window.app.terminal.executeCommand("trace matrix"), 4000); } }, 3000);

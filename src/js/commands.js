@@ -49,6 +49,10 @@ const Commands = {
             '  cipher <text>           - Encrypt/decrypt text',
             '  binary <text>           - Convert to/from binary',
             '  base64 <text>           - Encode/decode base64',
+            '',
+            'TESTING:',
+            '  test [type]             - Run Phase 6 comprehensive tests',
+            '                          Types: security, performance, accessibility, ux, browser, all',
             '  probe <target>          - Analyze target',
             '  scan                    - Scan current area',
             '',
@@ -753,6 +757,90 @@ const Commands = {
         await terminal.typeMessage('Your clearance level is insufficient.', 'error');
         await terminal.typeMessage('', 'output');
         await terminal.typeMessage('Contact your system administrator for access.', 'info');
+    },
+
+    /**
+     * Run comprehensive Phase 6 testing suite
+     */
+    test: async function(terminal, args) {
+        await terminal.typeMessage('INITIATING PHASE 6 COMPREHENSIVE TESTING...', 'info');
+        await terminal.typeMessage('', 'output');
+        
+        const testType = args[0];
+        
+        if (testType === 'security') {
+            await terminal.typeMessage('🔒 Running Security Audit Suite...', 'info');
+            if (window.SecurityTestSuite) {
+                const securityTest = new window.SecurityTestSuite();
+                securityTest.runSecurityAudit();
+                await terminal.typeMessage('Security tests initiated. Check browser console for results.', 'success');
+            } else {
+                await terminal.typeMessage('Security test suite not loaded.', 'error');
+            }
+        } else if (testType === 'performance') {
+            await terminal.typeMessage('⚡ Running Performance Analysis...', 'info');
+            if (window.PerformanceTestSuite) {
+                const perfTest = new window.PerformanceTestSuite();
+                perfTest.runPerformanceAnalysis();
+                await terminal.typeMessage('Performance tests initiated. Check browser console for results.', 'success');
+            } else {
+                await terminal.typeMessage('Performance test suite not loaded.', 'error');
+            }
+        } else if (testType === 'accessibility') {
+            await terminal.typeMessage('♿ Running Accessibility Audit...', 'info');
+            if (window.AccessibilityTestSuite) {
+                const a11yTest = new window.AccessibilityTestSuite();
+                a11yTest.runAccessibilityAudit();
+                await terminal.typeMessage('Accessibility tests initiated. Check browser console for results.', 'success');
+            } else {
+                await terminal.typeMessage('Accessibility test suite not loaded.', 'error');
+            }
+        } else if (testType === 'ux') {
+            await terminal.typeMessage('👤 Running User Experience Evaluation...', 'info');
+            if (window.UserExperienceTestSuite) {
+                const uxTest = new window.UserExperienceTestSuite();
+                uxTest.runUXEvaluation();
+                await terminal.typeMessage('UX tests initiated. Check browser console for results.', 'success');
+            } else {
+                await terminal.typeMessage('UX test suite not loaded.', 'error');
+            }
+        } else if (testType === 'browser') {
+            await terminal.typeMessage('🌐 Running Cross-Browser Compatibility Tests...', 'info');
+            if (window.CrossBrowserTestSuite) {
+                const browserTest = new window.CrossBrowserTestSuite();
+                browserTest.runCompatibilityTests();
+                await terminal.typeMessage('Cross-browser tests initiated. Check browser console for results.', 'success');
+            } else {
+                await terminal.typeMessage('Cross-browser test suite not loaded.', 'error');
+            }
+        } else if (testType === 'all' || !testType) {
+            await terminal.typeMessage('🚀 Running ALL comprehensive tests...', 'info');
+            
+            if (window.Phase6TestOrchestrator) {
+                const orchestrator = new window.Phase6TestOrchestrator();
+                orchestrator.runComprehensiveTests();
+                await terminal.typeMessage('✨ Comprehensive testing initiated!', 'success');
+                await terminal.typeMessage('', 'output');
+                await terminal.typeMessage('Testing Categories:', 'info');
+                await terminal.typeMessage('  🌐 Cross-Browser Compatibility', 'output');
+                await terminal.typeMessage('  ⚡ Performance Optimization', 'output');
+                await terminal.typeMessage('  ♿ Accessibility Compliance', 'output');
+                await terminal.typeMessage('  🔒 Security & Privacy Audit', 'output');
+                await terminal.typeMessage('  👤 User Experience Evaluation', 'output');
+                await terminal.typeMessage('', 'output');
+                await terminal.typeMessage('Check browser console for detailed results and reports.', 'success');
+            } else {
+                await terminal.typeMessage('Phase 6 test orchestrator not loaded.', 'error');
+            }
+        } else {
+            await terminal.typeMessage('Unknown test type. Available options:', 'error');
+            await terminal.typeMessage('  test security     - Security audit', 'info');
+            await terminal.typeMessage('  test performance  - Performance analysis', 'info');
+            await terminal.typeMessage('  test accessibility- Accessibility audit', 'info');
+            await terminal.typeMessage('  test ux          - User experience evaluation', 'info');
+            await terminal.typeMessage('  test browser     - Cross-browser compatibility', 'info');
+            await terminal.typeMessage('  test all         - Run all tests (default)', 'info');
+        }
     }
 };
 

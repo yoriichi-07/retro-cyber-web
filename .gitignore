@@ -58,3 +58,16 @@ temp/
 
 # Local development
 .local/
+
+# Development test files
+test_*.js
+test-*.html
+browser_test.js
+*_test.js
+*_TEST.html
+
+# Phase completion documents (keep in git history but don't track changes)
+PHASE*_COMPLETE*.md
+PHASE*_COMPLETION.md
+PROJECT_ROADMAP.md
+QUICK_START_GUIDE.md
