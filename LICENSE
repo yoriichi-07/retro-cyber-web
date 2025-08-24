@@ -1,0 +1,63 @@
+MIT License
+
+Copyright (c) 2025 Retro Cyber World
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+## Third-Party Licenses
+
+This project uses the following open-source libraries and resources:
+
+### Fonts
+- **Inconsolata**: Open Font License (OFL)
+  - Source: Google Fonts
+  - License: https://scripts.sil.org/OFL
+
+- **VT323**: Open Font License (OFL)
+  - Source: Google Fonts
+  - License: https://scripts.sil.org/OFL
+
+### Inspiration and References
+This project draws inspiration from the following works, used under fair use:
+
+- **The Matrix (1999)**: Visual effects inspiration
+  - Matrix rain effect concept
+  - Green-on-black terminal aesthetic
+
+- **Blade Runner**: Color scheme inspiration
+  - Cyberpunk atmosphere and mood
+  - Neon color palettes
+
+- **Neuromancer by William Gibson**: Conceptual inspiration
+  - Cyberpunk terminology and themes
+  - Digital world concepts
+
+### No External Dependencies
+This project is built entirely with vanilla web technologies:
+- HTML5, CSS3, JavaScript (ES6+)
+- No external JavaScript libraries or frameworks
+- All code is original implementation
+
+### Assets Attribution
+All visual assets and code in this repository are original works created specifically for this project, except where noted above.
+
+### Contributing
+By contributing to this project, you agree that your contributions will be licensed under the same MIT license.
