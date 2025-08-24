@@ -1,3 +1,9 @@
+/* Import component modules */
+@import url('./components/crt.css');
+@import url('./components/neon.css');
+@import url('./components/matrix.css');
+@import url('./components/animations.css');
+
 /* Main Styles for Retro Cyber World Terminal */
 /* Terminal interface, CRT effects, and cyberpunk aesthetics */
 

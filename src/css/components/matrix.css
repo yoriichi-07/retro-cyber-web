@@ -1,0 +1,463 @@
+/* Matrix Rain Effects - Retro Cyber Web */
+/* Enhanced Matrix-style digital rain animation system */
+
+/* ================================
+   Matrix Canvas Base Styling
+   ================================ */
+
+#matrix-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    opacity: 0.4;
+    pointer-events: none;
+    
+    /* Blend mode for cyberpunk effect */
+    mix-blend-mode: screen;
+    
+    /* Smooth transitions */
+    transition: opacity var(--transition-slow) ease-out;
+}
+
+/* Theme-specific matrix opacity adjustments */
+.dystopian-noir #matrix-canvas {
+    opacity: 0.35;
+    filter: hue-rotate(180deg) brightness(1.2);
+}
+
+.synthwave #matrix-canvas {
+    opacity: 0.4;
+    filter: hue-rotate(270deg) saturate(1.5);
+}
+
+.acid-burn #matrix-canvas {
+    opacity: 0.45;
+    filter: hue-rotate(90deg) brightness(1.1);
+}
+
+.ghost-shell #matrix-canvas {
+    opacity: 0.3;
+    filter: hue-rotate(200deg) brightness(0.9);
+}
+
+.digital-decay #matrix-canvas {
+    opacity: 0.4;
+    filter: hue-rotate(30deg) saturate(1.3);
+}
+
+/* ================================
+   Matrix Rain States
+   ================================ */
+
+/* Matrix mode activation */
+.matrix-mode #matrix-canvas {
+    opacity: 0.8;
+    z-index: 1;
+    mix-blend-mode: normal;
+}
+
+/* Intense matrix mode */
+.matrix-intense #matrix-canvas {
+    opacity: 0.9;
+    z-index: 2;
+    animation: matrix-pulse 3s ease-in-out infinite;
+}
+
+/* Dormant state (barely visible) */
+.matrix-dormant #matrix-canvas {
+    opacity: 0.1;
+}
+
+/* ================================
+   Matrix Character Styling
+   ================================ */
+
+.matrix-char {
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    font-weight: bold;
+    position: absolute;
+    pointer-events: none;
+    
+    /* Default green glow */
+    color: #39ff14;
+    text-shadow: 
+        0 0 2px #39ff14,
+        0 0 5px #39ff14,
+        0 0 8px #39ff14;
+    
+    /* Fade in/out animation */
+    animation: matrix-char-fade 2s linear forwards;
+}
+
+/* Character color variations */
+.matrix-char--bright {
+    color: #ccff00;
+    text-shadow: 
+        0 0 3px #ccff00,
+        0 0 6px #ccff00,
+        0 0 10px #ccff00,
+        0 0 15px #ccff00;
+}
+
+.matrix-char--dim {
+    color: #00cc00;
+    text-shadow: 
+        0 0 1px #00cc00,
+        0 0 3px #00cc00;
+    opacity: 0.7;
+}
+
+.matrix-char--leading {
+    color: #ffffff;
+    text-shadow: 
+        0 0 4px #ffffff,
+        0 0 8px #39ff14,
+        0 0 12px #39ff14;
+    font-weight: 900;
+}
+
+/* ================================
+   Matrix Column Effects
+   ================================ */
+
+.matrix-column {
+    position: absolute;
+    top: 0;
+    pointer-events: none;
+    animation: matrix-rain linear infinite;
+}
+
+/* Variable column speeds */
+.matrix-column--slow {
+    animation-duration: 8s;
+}
+
+.matrix-column--medium {
+    animation-duration: 4s;
+}
+
+.matrix-column--fast {
+    animation-duration: 2s;
+}
+
+.matrix-column--ultra-fast {
+    animation-duration: 1s;
+}
+
+/* ================================
+   Matrix CSS-based Alternative
+   ================================ */
+
+/* For browsers with limited Canvas support */
+.matrix-css {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    overflow: hidden;
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+.matrix-css::before,
+.matrix-css::after {
+    content: "01010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 200vh;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    line-height: 14px;
+    color: #39ff14;
+    text-shadow: 0 0 3px #39ff14;
+    word-break: break-all;
+    white-space: pre-wrap;
+    animation: matrix-css-rain 20s linear infinite;
+    opacity: 0.5;
+}
+
+.matrix-css::after {
+    left: 10%;
+    animation-delay: -5s;
+    animation-duration: 15s;
+    opacity: 0.3;
+}
+
+/* ================================
+   Matrix Glitch Effects
+   ================================ */
+
+.matrix-glitch {
+    position: relative;
+}
+
+.matrix-glitch::before,
+.matrix-glitch::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.1) 50%,
+        transparent 70%
+    );
+    animation: matrix-glitch-scan 3s linear infinite;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.matrix-glitch::after {
+    animation-delay: 1.5s;
+}
+
+/* Random matrix corruption */
+.matrix-corrupt {
+    animation: matrix-corrupt 0.1s infinite;
+}
+
+/* ================================
+   Interactive Matrix Effects
+   ================================ */
+
+/* Respond to user activity */
+.matrix-active {
+    animation: matrix-activity 0.5s ease-out;
+}
+
+/* Mouse proximity effect */
+.matrix-proximity {
+    transition: all 0.3s ease-out;
+}
+
+.matrix-proximity:hover {
+    transform: scale(1.1);
+    text-shadow: 
+        0 0 4px currentColor,
+        0 0 8px currentColor,
+        0 0 12px currentColor;
+}
+
+/* ================================
+   Matrix Animation Keyframes
+   ================================ */
+
+@keyframes matrix-char-fade {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    80% {
+        opacity: 0.8;
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+}
+
+@keyframes matrix-rain {
+    0% {
+        transform: translateY(-100vh);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh);
+        opacity: 0;
+    }
+}
+
+@keyframes matrix-css-rain {
+    0% {
+        transform: translateY(-100%);
+    }
+    100% {
+        transform: translateY(100vh);
+    }
+}
+
+@keyframes matrix-pulse {
+    0%, 100% {
+        opacity: 0.8;
+        filter: brightness(1);
+    }
+    50% {
+        opacity: 0.95;
+        filter: brightness(1.2) saturate(1.1);
+    }
+}
+
+@keyframes matrix-glitch-scan {
+    0%, 90% {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+    95% {
+        opacity: 0.8;
+        transform: translateX(0%);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+@keyframes matrix-corrupt {
+    0% { transform: translateX(0); }
+    10% { transform: translateX(-2px) scaleY(0.9); }
+    20% { transform: translateX(2px) scaleY(1.1); }
+    30% { transform: translateX(-1px) scaleY(0.95); }
+    40% { transform: translateX(1px) scaleY(1.05); }
+    50% { transform: translateX(-0.5px) scaleY(0.98); }
+    60% { transform: translateX(0.5px) scaleY(1.02); }
+    70% { transform: translateX(0) scaleY(1); }
+    100% { transform: translateX(0) scaleY(1); }
+}
+
+@keyframes matrix-activity {
+    0% {
+        opacity: 0.4;
+        filter: brightness(1);
+    }
+    50% {
+        opacity: 0.8;
+        filter: brightness(1.5) saturate(1.2);
+    }
+    100% {
+        opacity: 0.4;
+        filter: brightness(1);
+    }
+}
+
+/* ================================
+   Matrix Responsive Behavior
+   ================================ */
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    #matrix-canvas {
+        opacity: 0.2;
+    }
+    
+    .matrix-char {
+        font-size: 12px;
+    }
+    
+    .matrix-css::before,
+    .matrix-css::after {
+        font-size: 10px;
+        line-height: 12px;
+        animation-duration: 30s;
+    }
+    
+    /* Disable intensive effects on mobile */
+    .matrix-glitch::before,
+    .matrix-glitch::after {
+        display: none;
+    }
+}
+
+/* Tablet adjustments */
+@media (min-width: 769px) and (max-width: 1024px) {
+    #matrix-canvas {
+        opacity: 0.35;
+    }
+    
+    .matrix-char {
+        font-size: 13px;
+    }
+}
+
+/* High-DPI display optimizations */
+@media (min-resolution: 2dppx) {
+    .matrix-char {
+        text-shadow: 
+            0 0 1px #39ff14,
+            0 0 2px #39ff14,
+            0 0 4px #39ff14;
+    }
+}
+
+/* ================================
+   Matrix Performance Controls
+   ================================ */
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    #matrix-canvas,
+    .matrix-css,
+    .matrix-column,
+    .matrix-char,
+    .matrix-glitch::before,
+    .matrix-glitch::after {
+        animation: none !important;
+    }
+    
+    #matrix-canvas {
+        opacity: 0.1;
+    }
+}
+
+/* Battery saving mode */
+@media (prefers-reduced-data: reduce) {
+    #matrix-canvas {
+        display: none;
+    }
+    
+    .matrix-css {
+        display: none;
+    }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    #matrix-canvas,
+    .matrix-css {
+        display: none;
+    }
+}
+
+/* ================================
+   Matrix Utility Classes
+   ================================ */
+
+.matrix-hidden {
+    opacity: 0 !important;
+    pointer-events: none;
+}
+
+.matrix-visible {
+    opacity: 0.4;
+}
+
+.matrix-intense {
+    opacity: 0.8;
+    filter: brightness(1.2) saturate(1.1);
+}
+
+.matrix-subtle {
+    opacity: 0.2;
+    filter: brightness(0.8);
+}
+
+/* Matrix pause utility */
+.matrix-paused * {
+    animation-play-state: paused !important;
+}

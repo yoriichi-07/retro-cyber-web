@@ -22,10 +22,16 @@ class Terminal {
         this.inputContainer = document.getElementById('terminal-input-container');
         this.prompt = document.getElementById('terminal-prompt');
         this.input = document.getElementById('terminal-input');
-        this.cursor = document.getElementById('terminal-cursor');
+        this.cursor = null; // Will create if needed
 
-        if (!this.terminal || !this.output || !this.input) {
-            throw new Error('Required terminal elements not found');
+        if (!this.terminal) {
+            throw new Error('PHASE2_UPDATED: Terminal element (#terminal-content) not found');
+        }
+        if (!this.output) {
+            throw new Error('PHASE2_UPDATED: Output element (#terminal-output) not found');
+        }
+        if (!this.input) {
+            throw new Error('PHASE2_UPDATED: Input element (#terminal-input) not found');
         }
     }
 

@@ -50,28 +50,37 @@
     
     <!-- Main Terminal Interface -->
     <main id="main-content" role="main" aria-label="Cyber Terminal Interface">
-        <div id="terminal-container">
-            <section id="terminal" role="log" aria-live="polite" aria-label="Terminal Output">
-                <!-- Terminal Output Area -->
-                <pre id="output-area" aria-atomic="false"></pre>
-                
-                <!-- Command Input Area -->
-                <div id="input-area" role="group" aria-label="Command Input">
-                    <span class="prompt" aria-hidden="true">user@cyberterminal:~$</span>
-                    <label for="command-input" class="sr-only">Enter terminal command</label>
-                    <input 
-                        type="text" 
-                        id="command-input" 
-                        aria-describedby="command-help"
-                        autocomplete="off" 
-                        spellcheck="false"
-                        autofocus
-                        placeholder="Type 'help' for commands...">
-                    <div id="command-help" class="sr-only">
-                        Type 'help' to see available commands. Use arrow keys to navigate command history.
+        <!-- CRT Monitor Container -->
+        <div class="crt-screen">
+            <!-- CRT Visual Effects Overlays -->
+            <div class="scanlines" aria-hidden="true"></div>
+            <div class="flicker" aria-hidden="true"></div>
+            <div class="crt-noise" aria-hidden="true"></div>
+            
+            <!-- Terminal Container -->
+            <div id="terminal-container">
+                <section id="terminal-content" role="log" aria-live="polite" aria-label="Terminal Output">
+                    <!-- Terminal Output Area -->
+                    <pre id="terminal-output" aria-atomic="false"></pre>
+                    
+                    <!-- Command Input Area -->
+                    <div id="terminal-input-container" role="group" aria-label="Command Input">
+                        <span id="terminal-prompt" aria-hidden="true">user@cyberterminal:~$</span>
+                        <label for="terminal-input" class="sr-only">Enter terminal command</label>
+                        <input 
+                            type="text" 
+                            id="terminal-input" 
+                            aria-describedby="command-help"
+                            autocomplete="off" 
+                            spellcheck="false"
+                            autofocus
+                            placeholder="Type 'help' for commands...">
+                        <div id="command-help" class="sr-only">
+                            Type 'help' to see available commands. Use arrow keys to navigate command history.
+                        </div>
                     </div>
-                </div>
-            </section>
+                </section>
+            </div>
         </div>
     </main>
     

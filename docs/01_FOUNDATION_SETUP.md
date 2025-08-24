@@ -10,7 +10,6 @@
 - [x] Set up version control and branching strategy
 - [x] Implement basic typography system
 - [x] Configure development tools and workflow
-
 ---
 
 ## 📁 Project Structure Setup

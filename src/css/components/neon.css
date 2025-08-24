@@ -1,0 +1,491 @@
+/* Neon & Glow Effects - Retro Cyber Web */
+/* Authentic cyberpunk neon lighting and glow effects */
+
+/* ================================
+   Base Neon Text Effects
+   ================================ */
+
+.neon-text {
+    text-shadow: 
+        0 0 2px currentColor,
+        0 0 5px currentColor,
+        0 0 10px currentColor,
+        0 0 15px var(--color-accent),
+        0 0 25px var(--color-accent),
+        0 0 40px var(--color-accent);
+    
+    /* Enhance text readability */
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    
+    /* Smooth glow transitions */
+    transition: all var(--transition-base) ease-out;
+}
+
+/* Intensity variations */
+.neon-text--subtle {
+    text-shadow: 
+        0 0 2px currentColor,
+        0 0 5px currentColor,
+        0 0 8px var(--color-accent);
+}
+
+.neon-text--intense {
+    text-shadow: 
+        0 0 2px currentColor,
+        0 0 5px currentColor,
+        0 0 10px currentColor,
+        0 0 15px var(--color-accent),
+        0 0 25px var(--color-accent),
+        0 0 40px var(--color-accent),
+        0 0 60px var(--color-accent),
+        0 0 80px var(--color-accent);
+}
+
+/* Hover enhancement */
+.neon-text:hover,
+.neon-text:focus {
+    text-shadow: 
+        0 0 2px currentColor,
+        0 0 5px currentColor,
+        0 0 10px currentColor,
+        0 0 20px var(--color-accent),
+        0 0 35px var(--color-accent),
+        0 0 50px var(--color-accent),
+        0 0 70px var(--color-accent);
+    
+    transform: scale(1.02);
+}
+
+/* ================================
+   Color-Specific Neon Effects
+   ================================ */
+
+.neon-cyan {
+    color: #00f0ff;
+    text-shadow: 
+        0 0 2px #00f0ff,
+        0 0 5px #00f0ff,
+        0 0 10px #00f0ff,
+        0 0 15px #00f0ff,
+        0 0 25px #00c7d4,
+        0 0 40px #009fb0;
+}
+
+.neon-green {
+    color: #39ff14;
+    text-shadow: 
+        0 0 2px #39ff14,
+        0 0 5px #39ff14,
+        0 0 10px #39ff14,
+        0 0 15px #39ff14,
+        0 0 25px #2dd610,
+        0 0 40px #1fa80c;
+}
+
+.neon-magenta {
+    color: #ff00ff;
+    text-shadow: 
+        0 0 2px #ff00ff,
+        0 0 5px #ff00ff,
+        0 0 10px #ff00ff,
+        0 0 15px #ff00ff,
+        0 0 25px #cc00cc,
+        0 0 40px #990099;
+}
+
+.neon-orange {
+    color: #ff8c00;
+    text-shadow: 
+        0 0 2px #ff8c00,
+        0 0 5px #ff8c00,
+        0 0 10px #ff8c00,
+        0 0 15px #ff8c00,
+        0 0 25px #cc7000,
+        0 0 40px #995400;
+}
+
+.neon-yellow {
+    color: #fcee0c;
+    text-shadow: 
+        0 0 2px #fcee0c,
+        0 0 5px #fcee0c,
+        0 0 10px #fcee0c,
+        0 0 15px #fcee0c,
+        0 0 25px #c9be0a,
+        0 0 40px #968e07;
+}
+
+/* ================================
+   Neon Border Effects
+   ================================ */
+
+.neon-border {
+    border: 1px solid var(--color-accent);
+    border-radius: 4px;
+    box-shadow: 
+        inset 0 0 8px var(--color-accent-alpha-20),
+        0 0 8px var(--color-accent-alpha-30),
+        0 0 16px var(--color-accent-alpha-20),
+        0 0 24px var(--color-accent-alpha-10);
+    
+    transition: all var(--transition-base) ease-out;
+    position: relative;
+    overflow: hidden;
+}
+
+.neon-border:hover,
+.neon-border:focus-within {
+    box-shadow: 
+        inset 0 0 12px var(--color-accent-alpha-30),
+        0 0 12px var(--color-accent-alpha-40),
+        0 0 24px var(--color-accent-alpha-30),
+        0 0 36px var(--color-accent-alpha-20);
+    
+    border-color: var(--color-accent-bright);
+}
+
+/* Animated border glow */
+.neon-border--animated {
+    animation: neon-border-pulse 2s ease-in-out infinite alternate;
+}
+
+/* Corner emphasis */
+.neon-border::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    bottom: -1px;
+    background: linear-gradient(
+        45deg,
+        var(--color-accent) 0%,
+        transparent 20%,
+        transparent 80%,
+        var(--color-accent) 100%
+    );
+    z-index: -1;
+    border-radius: inherit;
+    opacity: 0.3;
+}
+
+/* ================================
+   Neon Container Effects
+   ================================ */
+
+.neon-container {
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    border: 1px solid var(--color-accent-alpha-30);
+    border-radius: 8px;
+    padding: 1rem;
+    
+    box-shadow: 
+        inset 0 0 20px var(--color-accent-alpha-10),
+        0 0 20px var(--color-accent-alpha-20),
+        0 0 40px var(--color-accent-alpha-10);
+    
+    position: relative;
+    overflow: hidden;
+}
+
+/* Inner glow effect */
+.neon-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(
+        ellipse at center,
+        var(--color-accent-alpha-05) 0%,
+        transparent 70%
+    );
+    pointer-events: none;
+    z-index: 0;
+}
+
+.neon-container > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* ================================
+   Holographic Effects
+   ================================ */
+
+.holographic {
+    background: linear-gradient(
+        45deg,
+        #ff00ff 0%,
+        #00ffff 25%,
+        #ff00ff 50%,
+        #00ffff 75%,
+        #ff00ff 100%
+    );
+    background-size: 400% 400%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    
+    animation: holographic-shift 4s ease-in-out infinite;
+    font-weight: bold;
+    text-shadow: none; /* Remove conflicts with text-shadow */
+}
+
+/* Holographic variations */
+.holographic--rainbow {
+    background: linear-gradient(
+        45deg,
+        #ff0000 0%,
+        #ff8000 14%,
+        #ffff00 28%,
+        #00ff00 42%,
+        #0080ff 57%,
+        #8000ff 71%,
+        #ff00ff 85%,
+        #ff0000 100%
+    );
+    background-size: 600% 600%;
+    animation: holographic-rainbow 6s linear infinite;
+}
+
+.holographic--cyberpunk {
+    background: linear-gradient(
+        45deg,
+        #00f0ff 0%,
+        #ff003c 25%,
+        #39ff14 50%,
+        #ff8c00 75%,
+        #00f0ff 100%
+    );
+    background-size: 300% 300%;
+    animation: holographic-cyberpunk 3s ease-in-out infinite;
+}
+
+/* ================================
+   Flickering Neon Effects
+   ================================ */
+
+.neon-flicker {
+    animation: neon-flicker 1.5s infinite;
+}
+
+.neon-flicker--subtle {
+    animation: neon-flicker-subtle 3s infinite;
+}
+
+.neon-flicker--intense {
+    animation: neon-flicker-intense 0.8s infinite;
+}
+
+/* Random flicker timing for multiple elements */
+.neon-flicker:nth-child(2n) {
+    animation-delay: 0.3s;
+}
+
+.neon-flicker:nth-child(3n) {
+    animation-delay: 0.7s;
+}
+
+.neon-flicker:nth-child(5n) {
+    animation-delay: 1.1s;
+}
+
+/* ================================
+   Neon Utility Classes
+   ================================ */
+
+/* Glow intensity utilities */
+.glow-sm {
+    text-shadow: 0 0 4px currentColor;
+}
+
+.glow-md {
+    text-shadow: 
+        0 0 2px currentColor,
+        0 0 8px currentColor;
+}
+
+.glow-lg {
+    text-shadow: 
+        0 0 2px currentColor,
+        0 0 8px currentColor,
+        0 0 16px var(--color-accent);
+}
+
+.glow-xl {
+    text-shadow: 
+        0 0 2px currentColor,
+        0 0 8px currentColor,
+        0 0 16px var(--color-accent),
+        0 0 32px var(--color-accent);
+}
+
+/* Box glow utilities */
+.box-glow-sm {
+    box-shadow: 0 0 8px var(--color-accent-alpha-20);
+}
+
+.box-glow-md {
+    box-shadow: 
+        0 0 8px var(--color-accent-alpha-20),
+        0 0 16px var(--color-accent-alpha-10);
+}
+
+.box-glow-lg {
+    box-shadow: 
+        0 0 8px var(--color-accent-alpha-30),
+        0 0 16px var(--color-accent-alpha-20),
+        0 0 24px var(--color-accent-alpha-10);
+}
+
+/* ================================
+   Animation Keyframes
+   ================================ */
+
+@keyframes neon-border-pulse {
+    0% {
+        box-shadow: 
+            inset 0 0 8px var(--color-accent-alpha-20),
+            0 0 8px var(--color-accent-alpha-30),
+            0 0 16px var(--color-accent-alpha-20);
+    }
+    100% {
+        box-shadow: 
+            inset 0 0 12px var(--color-accent-alpha-30),
+            0 0 12px var(--color-accent-alpha-40),
+            0 0 24px var(--color-accent-alpha-30),
+            0 0 36px var(--color-accent-alpha-20);
+    }
+}
+
+@keyframes holographic-shift {
+    0% { background-position: 0% 50%; }
+    25% { background-position: 100% 50%; }
+    50% { background-position: 100% 50%; }
+    75% { background-position: 0% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes holographic-rainbow {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 100% 100%; }
+}
+
+@keyframes holographic-cyberpunk {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes neon-flicker {
+    0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+        opacity: 1;
+        text-shadow: 
+            0 0 2px currentColor,
+            0 0 5px currentColor,
+            0 0 10px currentColor,
+            0 0 15px var(--color-accent),
+            0 0 25px var(--color-accent);
+    }
+    20%, 24%, 55% {
+        opacity: 0.4;
+        text-shadow: none;
+    }
+}
+
+@keyframes neon-flicker-subtle {
+    0%, 98%, 100% {
+        opacity: 1;
+        text-shadow: 
+            0 0 2px currentColor,
+            0 0 5px currentColor,
+            0 0 10px var(--color-accent);
+    }
+    99% {
+        opacity: 0.8;
+        text-shadow: 
+            0 0 2px currentColor,
+            0 0 4px currentColor;
+    }
+}
+
+@keyframes neon-flicker-intense {
+    0%, 10%, 11%, 12%, 13%, 90%, 91%, 92%, 93%, 100% {
+        opacity: 1;
+        text-shadow: 
+            0 0 2px currentColor,
+            0 0 5px currentColor,
+            0 0 10px currentColor,
+            0 0 15px var(--color-accent),
+            0 0 25px var(--color-accent),
+            0 0 40px var(--color-accent);
+    }
+    10.1%, 12.1%, 90.1%, 92.1% {
+        opacity: 0.1;
+        text-shadow: none;
+    }
+}
+
+/* ================================
+   Performance & Accessibility
+   ================================ */
+
+/* Reduce effects on mobile */
+@media (max-width: 768px) {
+    .neon-text,
+    .neon-text--intense {
+        text-shadow: 
+            0 0 2px currentColor,
+            0 0 5px currentColor,
+            0 0 8px var(--color-accent);
+    }
+    
+    .neon-border {
+        box-shadow: 
+            0 0 4px var(--color-accent-alpha-20),
+            0 0 8px var(--color-accent-alpha-10);
+    }
+    
+    .holographic {
+        animation-duration: 6s; /* Slower for performance */
+    }
+}
+
+/* Respect motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    .neon-flicker,
+    .neon-flicker--subtle,
+    .neon-flicker--intense,
+    .holographic,
+    .holographic--rainbow,
+    .holographic--cyberpunk,
+    .neon-border--animated {
+        animation: none !important;
+    }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    .neon-text,
+    .neon-text--subtle,
+    .neon-text--intense {
+        text-shadow: none;
+        font-weight: bold;
+    }
+    
+    .neon-border {
+        box-shadow: none;
+        border-width: 2px;
+    }
+    
+    .holographic {
+        background: none !important;
+        color: var(--color-text-primary) !important;
+        -webkit-text-fill-color: var(--color-text-primary) !important;
+    }
+}

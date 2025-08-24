@@ -1,0 +1,397 @@
+/* CRT Monitor Effects - Retro Cyber Web */
+/* Authentic CRT visual effects including glow, curvature, and distortion */
+
+/* ================================
+   CRT Screen Container
+   ================================ */
+
+.crt-screen {
+    position: relative;
+    background: radial-gradient(
+        ellipse at center,
+        rgba(0, 255, 0, 0.08) 0%,
+        rgba(0, 100, 0, 0.04) 40%,
+        rgba(0, 50, 0, 0.02) 70%,
+        rgba(0, 0, 0, 0.95) 100%
+    );
+    border-radius: 12px;
+    padding: 20px;
+    overflow: hidden;
+    
+    /* CRT Screen curvature simulation */
+    transform: perspective(1000px) rotateX(1deg);
+    
+    /* Subtle vignette effect */
+    box-shadow: 
+        inset 0 0 100px rgba(0, 0, 0, 0.5),
+        inset 0 0 200px rgba(0, 0, 0, 0.3),
+        0 0 50px rgba(0, 255, 0, 0.1);
+    
+    /* Glass reflection simulation */
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.05) 0%,
+            transparent 20%,
+            transparent 80%,
+            rgba(255, 255, 255, 0.02) 100%
+        );
+        pointer-events: none;
+        z-index: 5;
+    }
+}
+
+/* Theme-specific CRT backgrounds */
+.dystopian-noir .crt-screen {
+    background: radial-gradient(
+        ellipse at center,
+        rgba(0, 240, 255, 0.06) 0%,
+        rgba(0, 120, 127, 0.03) 40%,
+        rgba(5, 10, 14, 0.95) 100%
+    );
+    box-shadow: 
+        inset 0 0 100px rgba(5, 10, 14, 0.8),
+        0 0 50px rgba(0, 240, 255, 0.08);
+}
+
+.synthwave .crt-screen {
+    background: radial-gradient(
+        ellipse at center,
+        rgba(255, 0, 255, 0.08) 0%,
+        rgba(148, 0, 211, 0.05) 40%,
+        rgba(75, 0, 130, 0.95) 100%
+    );
+    box-shadow: 
+        inset 0 0 100px rgba(75, 0, 130, 0.8),
+        0 0 50px rgba(255, 0, 255, 0.1);
+}
+
+.acid-burn .crt-screen {
+    background: radial-gradient(
+        ellipse at center,
+        rgba(116, 238, 21, 0.08) 0%,
+        rgba(58, 119, 10, 0.04) 40%,
+        rgba(0, 0, 0, 0.95) 100%
+    );
+    box-shadow: 
+        inset 0 0 100px rgba(0, 0, 0, 0.8),
+        0 0 50px rgba(116, 238, 21, 0.1);
+}
+
+.ghost-shell .crt-screen {
+    background: radial-gradient(
+        ellipse at center,
+        rgba(52, 237, 243, 0.08) 0%,
+        rgba(26, 118, 121, 0.04) 40%,
+        rgba(7, 15, 52, 0.95) 100%
+    );
+    box-shadow: 
+        inset 0 0 100px rgba(7, 15, 52, 0.8),
+        0 0 50px rgba(52, 237, 243, 0.1);
+}
+
+.digital-decay .crt-screen {
+    background: radial-gradient(
+        ellipse at center,
+        rgba(255, 140, 0, 0.08) 0%,
+        rgba(127, 70, 0, 0.04) 40%,
+        rgba(64, 35, 0, 0.95) 100%
+    );
+    box-shadow: 
+        inset 0 0 100px rgba(64, 35, 0, 0.8),
+        0 0 50px rgba(255, 140, 0, 0.1);
+}
+
+/* ================================
+   Scanline Overlay System
+   ================================ */
+
+.crt-scanlines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 15;
+    
+    /* Base scanline pattern */
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.1) 0px,
+        rgba(0, 0, 0, 0.1) 1px,
+        transparent 1px,
+        transparent 3px
+    );
+    
+    /* Animated scanline movement */
+    animation: scanlines-move 0.1s linear infinite;
+}
+
+/* Denser scanlines for high-DPI displays */
+@media (min-resolution: 2dppx) {
+    .crt-scanlines {
+        background: repeating-linear-gradient(
+            0deg,
+            rgba(0, 0, 0, 0.08) 0px,
+            rgba(0, 0, 0, 0.08) 0.5px,
+            transparent 0.5px,
+            transparent 2px
+        );
+    }
+}
+
+/* Mobile optimization - lighter scanlines */
+@media (max-width: 768px) {
+    .crt-scanlines {
+        background: repeating-linear-gradient(
+            0deg,
+            rgba(0, 0, 0, 0.05) 0px,
+            rgba(0, 0, 0, 0.05) 1px,
+            transparent 1px,
+            transparent 4px
+        );
+    }
+}
+
+/* ================================
+   CRT Flicker & Noise Effects
+   ================================ */
+
+.crt-flicker {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 8;
+    opacity: 0;
+    background: rgba(255, 255, 255, 0.02);
+    animation: crt-flicker 4s infinite;
+}
+
+.crt-noise {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 6;
+    opacity: 0.03;
+    background-image: 
+        radial-gradient(circle at 20% 50%, transparent 20%, rgba(255, 255, 255, 0.3) 21%, rgba(255, 255, 255, 0.3) 34%, transparent 35%, transparent),
+        linear-gradient(0deg, transparent 24%, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, 0.05) 75%, rgba(255, 255, 255, 0.05) 76%, transparent 77%, transparent);
+    background-size: 3px 3px, 1px 1px;
+    animation: crt-noise 0.2s infinite linear;
+}
+
+/* ================================
+   Screen Curvature & Distortion
+   ================================ */
+
+.crt-container {
+    position: relative;
+    width: 100%;
+    max-width: 100vw;
+    margin: 0 auto;
+    padding: 20px;
+    
+    /* Barrel distortion effect (subtle) */
+    transform: scale(1.02, 1.01);
+    transform-origin: center center;
+    
+    /* Screen bezel effect */
+    border: 8px solid #1a1a1a;
+    border-radius: 20px;
+    background: #0a0a0a;
+    
+    /* Monitor housing shadow */
+    box-shadow: 
+        0 0 30px rgba(0, 0, 0, 0.8),
+        inset 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Desktop-specific curvature enhancement */
+@media (min-width: 1024px) {
+    .crt-container {
+        transform: perspective(1200px) rotateX(2deg) scale(1.02, 1.01);
+    }
+}
+
+/* ================================
+   Phosphor Persistence Effect
+   ================================ */
+
+.crt-phosphor {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 7;
+    
+    /* Subtle green phosphor glow */
+    background: radial-gradient(
+        ellipse at center,
+        rgba(0, 255, 0, 0.01) 0%,
+        transparent 50%
+    );
+    
+    /* Phosphor decay animation */
+    animation: phosphor-decay 2s ease-out infinite;
+}
+
+/* Theme-specific phosphor colors */
+.dystopian-noir .crt-phosphor {
+    background: radial-gradient(
+        ellipse at center,
+        rgba(0, 240, 255, 0.015) 0%,
+        transparent 50%
+    );
+}
+
+.synthwave .crt-phosphor {
+    background: radial-gradient(
+        ellipse at center,
+        rgba(255, 0, 255, 0.015) 0%,
+        transparent 50%
+    );
+}
+
+/* ================================
+   RGB Separation Effect
+   ================================ */
+
+.crt-rgb-shift {
+    position: relative;
+    
+    &::before,
+    &::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 2;
+    }
+    
+    &::before {
+        color: rgba(255, 0, 0, 0.7);
+        transform: translateX(-1px);
+    }
+    
+    &::after {
+        color: rgba(0, 255, 255, 0.7);
+        transform: translateX(1px);
+        z-index: 1;
+    }
+}
+
+/* Subtle RGB shift for headings */
+.terminal h1,
+.terminal h2 {
+    position: relative;
+    
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -1px;
+        width: 100%;
+        height: 100%;
+        background: inherit;
+        color: rgba(255, 0, 100, 0.3);
+        z-index: -1;
+    }
+}
+
+/* ================================
+   CRT Animation Keyframes
+   ================================ */
+
+@keyframes scanlines-move {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(4px); }
+}
+
+@keyframes crt-flicker {
+    0%, 98% { opacity: 0; }
+    99% { opacity: 0.02; }
+    100% { opacity: 0; }
+}
+
+@keyframes crt-noise {
+    0% { transform: translate(0, 0); }
+    10% { transform: translate(-5%, -10%); }
+    20% { transform: translate(-10%, 5%); }
+    30% { transform: translate(5%, -25%); }
+    40% { transform: translate(-5%, 25%); }
+    50% { transform: translate(-10%, 5%); }
+    60% { transform: translate(15%, 0%); }
+    70% { transform: translate(0%, 15%); }
+    80% { transform: translate(-15%, 10%); }
+    90% { transform: translate(10%, 5%); }
+    100% { transform: translate(5%, 0%); }
+}
+
+@keyframes phosphor-decay {
+    0% { opacity: 0.8; }
+    50% { opacity: 0.4; }
+    100% { opacity: 0.8; }
+}
+
+/* ================================
+   Performance Optimizations
+   ================================ */
+
+/* Reduce effects on mobile for performance */
+@media (max-width: 768px) {
+    .crt-flicker,
+    .crt-noise {
+        display: none;
+    }
+    
+    .crt-phosphor {
+        animation: none;
+    }
+    
+    .crt-container {
+        transform: none;
+        border-width: 4px;
+    }
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    .crt-scanlines,
+    .crt-flicker,
+    .crt-noise,
+    .crt-phosphor {
+        animation: none !important;
+    }
+}
+
+/* High contrast mode compatibility */
+@media (prefers-contrast: high) {
+    .crt-screen {
+        background: black;
+        box-shadow: none;
+    }
+    
+    .crt-scanlines,
+    .crt-flicker,
+    .crt-noise {
+        display: none;
+    }
+}
