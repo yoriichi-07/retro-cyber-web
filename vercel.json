@@ -1,14 +1,13 @@
 {
   "version": 2,
-  "name": "retro-cyber-world",
-  "routes": [
+  "rewrites": [
     {
-      "src": "/404.html",
-      "dest": "/404.html"
+      "source": "/sector7/classified",
+      "destination": "/404.html"
     },
     {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ],
   "headers": [
@@ -38,10 +37,5 @@
         }
       ]
     }
-  ],
-  "functions": {
-    "index.html": {
-      "includeFiles": "**"
-    }
-  }
+  ]
 }
