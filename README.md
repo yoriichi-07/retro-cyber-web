@@ -14,7 +14,7 @@ An immersive story-driven cyberpunk terminal experience where you become a Grid 
 
 ### 🚀 Getting Started
 
-1. **Visit the live experience**: [https://retro-cyber-world.netlify.app](https://retro-cyber-world.netlify.app)
+1. **Visit the live experience**: (https://retro-cyber-web.vercel.app/)
 2. **Begin your story**: Type `start` to begin the Grid Infiltrator experience
 3. **Meet the Oracle**: Follow the immersive introduction sequence
 4. **Create your identity**: Choose your hacker callsign and join the resistance
