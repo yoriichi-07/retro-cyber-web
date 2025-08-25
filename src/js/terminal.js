@@ -9,8 +9,10 @@ class Terminal {
         this.initializeHistory();
         this.setupPrompt();
         
-        // Boot sequence
-        this.startBootSequence();
+        // Delay boot sequence to allow story system attachment
+        setTimeout(() => {
+            this.startBootSequence();
+        }, 100);
     }
 
     /**
@@ -68,6 +70,22 @@ class Terminal {
         this.lastCommand = '';
         this.commandCount = 0;
         this.errorCount = 0;
+        
+        // Performance monitoring
+        this.performanceStats = {
+            frameRate: 60,
+            lastFrameTime: performance.now(),
+            isTyping: false,
+            animationSkipped: false
+        };
+        
+        // EMERGENCY: User control for animation speed
+        this.animationSpeed = 'smart'; // 'instant', 'fast', 'smart', 'animated'
+        this.skipAnimations = false;
+        
+        // Input mode for story input (bypasses command processing)
+        this.inputMode = null; // null = command mode, 'direct' = direct input mode
+        this.inputCallback = null; // callback for direct input mode
     }
 
     /**
@@ -284,29 +302,52 @@ class Terminal {
     }
 
     /**
-     * Boot sequence animation
+     * Set custom prompt text (used by story system)
+     */
+    setPrompt(promptText) {
+        if (this.prompt) {
+            this.prompt.textContent = promptText;
+        }
+    }
+
+    /**
+     * Boot sequence animation - UPDATED FOR MANUAL START
      */
     async startBootSequence() {
         this.isBooting = true;
         this.input.disabled = true;
         
+        window.storyDebug?.log('Terminal boot sequence starting...');
+        
+        // Always show standard boot - story system only starts on "start" command
         const bootMessages = [
-            'GRID TERMINAL v2.0.47 - INITIALIZING...',
-            'Checking memory banks... [OK]',
-            'Loading neural pathways... [OK]',
-            'Establishing quantum link... [OK]',
-            'Syncing with the Grid... [OK]',
-            'Security protocols active... [OK]',
+            '████████████████████████████████████████████████████████████',
+            '██                                                        ██',
+            '██                GRID ACCESS TERMINAL v2.1               ██',
+            '██                    INITIALIZING...                     ██',
+            '██                                                        ██',
+            '████████████████████████████████████████████████████████████',
             '',
-            'Welcome to the GRID, user.',
-            'Type "help" for available commands.',
-            'Type "tutorial" to begin your journey.',
+            'Establishing secure connection...',
+            'Bypassing corporate firewalls...',
+            'Initializing quantum encryption...',
+            'Loading neural interface protocols...',
+            '',
+            '>> CONNECTION ESTABLISHED <<',
+            '',
+            '═══════════════════════════════════════════════════════════════',
+            '║  WELCOME TO THE GRID                                        ║',
+            '║                                                             ║',
+            '║  Standard Mode: Type "help" for available commands          ║',
+            '║  Story Mode: Type "start" to begin Grid Infiltrator         ║',
+            '║                                                             ║',
+            '═══════════════════════════════════════════════════════════════',
             ''
         ];
 
         for (let i = 0; i < bootMessages.length; i++) {
             await this.typeMessage(bootMessages[i], 'system');
-            await Utils.delay(300 + Math.random() * 200);
+            await Utils.delay(200); // Faster boot sequence
         }
 
         this.isBooting = false;
@@ -315,7 +356,7 @@ class Terminal {
     }
 
     /**
-     * Type message with animation (Enhanced with memory management)
+     * Type message with ULTRA-HIGH-PERFORMANCE animation - EMERGENCY SPEED FIX
      * @param {string} message - Message to type
      * @param {string} type - Message type (system, error, success, info)
      */
@@ -340,37 +381,145 @@ class Terminal {
         this.output.appendChild(line);
         this.manageLinesMemory();
         
-        // Enhanced typing based on message type
-        if (type === 'system' || type === 'story') {
-            // Use enhanced typewriter for dramatic effect
-            if (window.typewriter) {
-                await window.typewriter.type(line, message, {
-                    speed: 20 + Math.random() * 15,
-                    cursor: true,
-                    variableSpeed: true,
-                    sound: this.soundEnabled
-                });
-            } else {
-                // Fallback typing
-                for (let i = 0; i < message.length; i++) {
-                    line.textContent = message.substring(0, i + 1);
-                    await Utils.delay(20 + Math.random() * 10);
-                    this.scrollToBottom();
-                }
-            }
+        // EMERGENCY SPEED SCALING - Content length determines speed
+        const messageLength = message.length;
+        
+        // OVERRIDE: Check user preference for instant mode
+        if (this.animationSpeed === 'instant' || this.skipAnimations) {
+            line.textContent = message;
+            this.scrollToBottom();
+            return;
+        }
+        
+        // FOR USABILITY: Long content gets instant or super-fast display
+        if (messageLength > 500 || type === 'help' || message.includes('COMMAND') || message.includes('help')) {
+            // INSTANT display for help/documentation - NO MORE 2-MINUTE WAITS!
+            line.textContent = message;
+            this.scrollToBottom();
+            return;
+        } else if (this.animationSpeed === 'fast' || messageLength > 200) {
+            // SUPER FAST for medium content (1ms per char = 0.2-0.5 seconds total)
+            return this.ultraFastTypewriter(line, message, 1);
+        } else if (messageLength > 100) {
+            // FAST for short-medium content (3ms per char = 0.3 seconds total)
+            return this.ultraFastTypewriter(line, message, 3);
+        } else if (type === 'system' || type === 'info') {
+            // ANIMATED for very short content only (5ms per char = 0.5 seconds max)
+            const delay = this.animationSpeed === 'animated' ? 5 : 2;
+            return this.ultraFastTypewriter(line, message, delay);
         } else if (type === 'error') {
-            // Quick red flash for errors
+            // INSTANT for errors - usability critical
             line.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
             line.textContent = message;
             setTimeout(() => {
                 line.style.backgroundColor = '';
             }, 200);
             this.errorCount++;
+            this.scrollToBottom();
         } else {
-            // Instant for regular output
+            // INSTANT for regular output
             line.textContent = message;
             this.scrollToBottom();
         }
+    }
+    
+    /**
+     * Ultra-fast typewriter with maximum performance
+     */
+    async ultraFastTypewriter(line, message, charDelay) {
+        // EMERGENCY: Signal typing in progress for animation priority
+        this.performanceStats.isTyping = true;
+        
+        // Pause heavy animations during typing for performance
+        if (window.retroCyberApp && window.retroCyberApp.pauseHeavyAnimations) {
+            window.retroCyberApp.pauseHeavyAnimations();
+        }
+        
+        return new Promise((resolve) => {
+            let charIndex = 0;
+            let lastFrameTime = performance.now();
+            
+            const typeFrame = (currentTime) => {
+                // Check for emergency skip
+                if (this.skipAnimations) {
+                    line.textContent = message;
+                    this.scrollToBottom();
+                    this.performanceStats.isTyping = false;
+                    // Resume animations
+                    if (window.retroCyberApp && window.retroCyberApp.resumeHeavyAnimations) {
+                        window.retroCyberApp.resumeHeavyAnimations();
+                    }
+                    resolve();
+                    return;
+                }
+                
+                // Process multiple characters per frame for speed
+                const timeDiff = currentTime - lastFrameTime;
+                const charsToAdd = Math.max(1, Math.floor(timeDiff / charDelay));
+                
+                if (charIndex < message.length) {
+                    const endIndex = Math.min(charIndex + charsToAdd, message.length);
+                    line.textContent = message.substring(0, endIndex);
+                    charIndex = endIndex;
+                    lastFrameTime = currentTime;
+                    
+                    // Throttled scrolling for performance
+                    if (charIndex % 10 === 0 || charIndex >= message.length) {
+                        this.scrollToBottom();
+                    }
+                } else {
+                    this.scrollToBottom();
+                    this.performanceStats.isTyping = false;
+                    // Resume animations
+                    if (window.retroCyberApp && window.retroCyberApp.resumeHeavyAnimations) {
+                        window.retroCyberApp.resumeHeavyAnimations();
+                    }
+                    resolve();
+                    return;
+                }
+                requestAnimationFrame(typeFrame);
+            };
+            
+            requestAnimationFrame(typeFrame);
+        });
+    }
+
+    /**
+     * Skip current animation - EMERGENCY USER CONTROL
+     */
+    skipCurrentAnimation() {
+        this.skipAnimations = true;
+        this.performanceStats.animationSkipped = true;
+        
+        // Force complete any ongoing animations
+        const lines = this.output.querySelectorAll('.terminal-line');
+        lines.forEach(line => {
+            if (line.getAttribute('data-animating')) {
+                line.removeAttribute('data-animating');
+            }
+        });
+        
+        this.typeMessage('[SKIP] Animation skipped - instant mode activated', 'info');
+    }
+    
+    /**
+     * Toggle animation speed - USER CONTROL
+     */
+    toggleAnimationSpeed() {
+        const speeds = ['instant', 'fast', 'smart', 'animated'];
+        const currentIndex = speeds.indexOf(this.animationSpeed);
+        const nextIndex = (currentIndex + 1) % speeds.length;
+        this.animationSpeed = speeds[nextIndex];
+        
+        this.typeMessage(`[SPEED] Animation speed: ${this.animationSpeed}`, 'info');
+    }
+    
+    /**
+     * Set instant mode for emergency usability
+     */
+    setInstantMode() {
+        this.animationSpeed = 'instant';
+        this.typeMessage('[INSTANT] INSTANT MODE: All animations disabled for maximum speed', 'info');
     }
 
     /**
@@ -409,6 +558,27 @@ class Terminal {
                 this.interrupt();
             }
             return;
+        }
+
+        // Handle direct input mode (for story input like character names)
+        if (this.inputMode === 'direct') {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const input = this.input.value.trim();
+                this.input.value = '';
+                
+                // Display the input
+                this.typeMessage(input, 'input');
+                
+                // Call the callback and exit input mode
+                if (this.inputCallback) {
+                    this.inputCallback(input);
+                    this.inputCallback = null;
+                }
+                this.inputMode = null;
+                this.updatePrompt();
+            }
+            return; // Don't process normal command shortcuts in input mode
         }
 
         switch (e.key) {
@@ -455,6 +625,18 @@ class Terminal {
                     e.preventDefault();
                     this.interrupt();
                 }
+                break;
+                
+            // EMERGENCY: Escape key to skip animations
+            case 'Escape':
+                e.preventDefault();
+                this.skipCurrentAnimation();
+                break;
+                
+            // EMERGENCY: Speed control shortcuts
+            case 'F1':
+                e.preventDefault();
+                this.toggleAnimationSpeed();
                 break;
                 
             case 'u':
@@ -1075,10 +1257,12 @@ class Terminal {
         };
 
         // Error handling with glitch effects
-        const originalAddError = this.addError.bind(this);
-        this.addError = (message) => {
-            this.triggerAnimationEvent('error', { message });
-            return originalAddError(message);
+        const originalTypeMessage = this.typeMessage.bind(this);
+        this.typeMessage = (message, type = 'output') => {
+            if (type === 'error') {
+                this.triggerAnimationEvent('error', { message });
+            }
+            return originalTypeMessage(message, type);
         };
 
         // Boot sequence with cinematic effects
@@ -1231,6 +1415,36 @@ class Terminal {
         if (this.animationIntegration) {
             this.animationIntegration.setMasterIntensity(intensity);
         }
+    }
+
+    /**
+     * Enter direct input mode for story input (bypasses command processing)
+     * @param {function} callback - Function to call with the input value
+     * @param {string} promptText - Optional prompt text to display
+     */
+    enterInputMode(callback, promptText = '') {
+        this.inputMode = 'direct';
+        this.inputCallback = callback;
+        if (promptText) {
+            this.typeMessage(promptText, 'input');
+        }
+        this.focusInput();
+    }
+
+    /**
+     * Exit direct input mode and return to command processing
+     */
+    exitInputMode() {
+        this.inputMode = null;
+        this.inputCallback = null;
+        this.updatePrompt();
+    }
+
+    /**
+     * Check if terminal is in direct input mode
+     */
+    isInInputMode() {
+        return this.inputMode === 'direct';
     }
 }
 

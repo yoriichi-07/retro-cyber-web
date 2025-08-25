@@ -1,79 +1,541 @@
-/* Command System for Retro Cyber World */
-/* All available terminal commands and their implementations */
+/* Story-Driven Command System for Grid Infiltrator */
+/* All commands integrated with narrative progression and character development */
 
 const Commands = {
     /**
-     * Display help information
+     * Story-driven help system that adapts to user progress
      */
     help: async function(terminal, args) {
+        // Check if user has access to story system
+        if (!terminal.story) {
+            return await Commands.helpFallback(terminal, args);
+        }
+
         if (args[0]) {
-            // Show help for specific command
             return await Commands.helpCommand(terminal, args[0]);
         }
         
+        // Show contextual help based on current mission and progress
+        const mission = terminal.story.getCurrentMission();
+        const unlockedCommands = terminal.story.unlockedCommands;
+        
+        await terminal.typeMessage('╔══════════════════════════════════════════════════════════════╗', 'info');
+        await terminal.typeMessage('║                    GRID COMMAND INTERFACE                   ║', 'info');
+        await terminal.typeMessage('╚══════════════════════════════════════════════════════════════╝', 'info');
+        await terminal.typeMessage('', 'output');
+        
+        if (mission) {
+            await terminal.typeMessage(`► Current Mission: ${mission.title}`, 'info');
+            await terminal.typeMessage('', 'output');
+        }
+        
+        await terminal.typeMessage('▓ AVAILABLE COMMANDS:', 'info');
+        await terminal.typeMessage('', 'output');
+        
+        // Show commands based on story progression
+        const commandCategories = Commands.getCommandsByCategory(unlockedCommands, mission);
+        
+        for (const [category, commands] of Object.entries(commandCategories)) {
+            if (commands.length > 0) {
+                await terminal.typeMessage(`■ ${category.toUpperCase()}:`, 'info');
+                for (const cmd of commands) {
+                    await terminal.typeMessage(`  ${cmd.name.padEnd(15)} - ${cmd.description}`, 'output');
+                }
+                await terminal.typeMessage('', 'output');
+            }
+        }
+        
+        // Show mission-specific guidance
+        if (mission) {
+            await terminal.typeMessage('► MISSION GUIDANCE:', 'info');
+            await terminal.typeMessage('  mission             - View current objectives', 'output');
+            await terminal.typeMessage('  mission hint        - Get contextual guidance', 'output');
+            await terminal.typeMessage('  mission progress    - Check your advancement', 'output');
+            await terminal.typeMessage('', 'output');
+        }
+        
+        await terminal.typeMessage('* Commands unlock as you progress through missions!', 'success');
+        
+        // Track that user learned about help
+        if (terminal.story) {
+            terminal.story.setStoryFlag('learned_help');
+            
+            // Also track this action in mission system
+            if (terminal.missionSystem) {
+                terminal.missionSystem.trackAction('used_help', {});
+            }
+        }
+    },
+
+    /**
+     * Get commands organized by category based on user progress
+     */
+    getCommandsByCategory: function(unlockedCommands, mission) {
+        const allCommands = {
+            essential: [
+                { name: 'help', description: 'Show available commands', unlocked: true },
+                { name: 'clear', description: 'Clear the terminal screen', unlocked: true },
+                { name: 'start', description: 'Begin Grid Infiltrator story', unlocked: true },
+                { name: 'mission', description: 'View current objectives', unlocked: unlockedCommands.includes('mission') },
+                { name: 'oracle', description: 'Listen to Oracle\'s guidance', unlocked: unlockedCommands.includes('oracle') }
+            ],
+            identity: [
+                { name: 'whoami', description: 'Display your hacker identity', unlocked: unlockedCommands.includes('whoami') },
+                { name: 'status', description: 'Show Grid connection status', unlocked: unlockedCommands.includes('status') },
+                { name: 'progress', description: 'View character progression', unlocked: unlockedCommands.includes('progress') }
+            ],
+            navigation: [
+                { name: 'ls', description: 'List directory contents', unlocked: unlockedCommands.includes('ls') },
+                { name: 'cd', description: 'Change directory', unlocked: unlockedCommands.includes('cd') },
+                { name: 'pwd', description: 'Show current location', unlocked: unlockedCommands.includes('pwd') },
+                { name: 'cat', description: 'Read file contents', unlocked: unlockedCommands.includes('cat') }
+            ],
+            hacking: [
+                { name: 'scan', description: 'Scan for network activity', unlocked: unlockedCommands.includes('scan') },
+                { name: 'probe', description: 'Analyze target systems', unlocked: unlockedCommands.includes('probe') },
+                { name: 'trace', description: 'Trace network connections', unlocked: unlockedCommands.includes('trace') }
+            ],
+            cryptography: [
+                { name: 'cipher', description: 'Encrypt/decrypt messages', unlocked: unlockedCommands.includes('cipher') },
+                { name: 'binary', description: 'Convert binary data', unlocked: unlockedCommands.includes('binary') },
+                { name: 'decode', description: 'Decode various formats', unlocked: unlockedCommands.includes('decode') }
+            ],
+            advanced: [
+                { name: 'matrix', description: 'Enter Matrix visualization', unlocked: unlockedCommands.includes('matrix') },
+                { name: 'admin', description: 'Administrative functions', unlocked: unlockedCommands.includes('admin') },
+                { name: 'navigate', description: 'Advanced navigation', unlocked: unlockedCommands.includes('navigate') }
+            ]
+        };
+        
+        // Filter to only show unlocked commands
+        const filteredCategories = {};
+        for (const [category, commands] of Object.entries(allCommands)) {
+            filteredCategories[category] = commands.filter(cmd => cmd.unlocked);
+        }
+        
+        return filteredCategories;
+    },
+
+    /**
+     * Fallback help for when story system isn't available
+     */
+    helpFallback: async function(terminal, args) {
         const helpText = [
-            'GRID TERMINAL COMMANDS:',
+            '╔══════════════════════════════════════╗',
+            '║            CYBER TERMINAL            ║',
+            '║          Essential Commands          ║',
+            '╚══════════════════════════════════════╝',
             '',
-            'BASIC COMMANDS:',
-            '  help [command]          - Show this help or help for specific command',
-            '  clear                   - Clear the terminal',
-            '  history                 - Show command history',
-            '  ls [directory]          - List directory contents',
-            '  cat <file>              - Display file contents',
-            '  cd <directory>          - Change directory',
-            '  pwd                     - Show current directory',
-            '  whoami                  - Display current user',
-            '  date                    - Show current date/time',
-            '',
-            'SYSTEM COMMANDS:',
-            '  status                  - Show system status',
-            '  processes               - List running processes',
-            '  memory                  - Display memory usage',
-            '  network                 - Show network information',
-            '  about                   - Project information and credits',
-            '  stats                   - Show terminal statistics',
-            '',
-            'GAME COMMANDS:',
-            '  tutorial                - Start interactive tutorial',
-            '  puzzle                  - Current puzzle information',
-            '  hint                    - Get a hint for current puzzle',
-            '  inventory               - Show your items',
-            '  score                   - Display current score',
-            '',
-            'CUSTOMIZATION:',
-            '  theme [name]            - Switch color theme or list themes',
-            '  sound                   - Toggle sound effects',
-            '  animations              - Toggle animations',
-            '',
-            'TOOLS:',
-            '  cipher <text>           - Encrypt/decrypt text',
-            '  binary <text>           - Convert to/from binary',
-            '  base64 <text>           - Encode/decode base64',
-            '',
-            'TESTING:',
-            '  test [type]             - Run Phase 6 comprehensive tests',
-            '                          Types: security, performance, accessibility, ux, browser, all',
-            '  probe <target>          - Analyze target',
-            '  scan                    - Scan current area',
-            '',
-            'SPECIAL:',
-            '  matrix                  - Activate Matrix mode',
-            '  glitch                  - System diagnostic',
-            '  secrets                 - Show found secrets',
-            '  admin                   - Administrative access (if authorized)',
-            '  konami                  - Enter famous code sequence',
-            '',
-            'SHORTCUTS:',
-            '  Ctrl+L                  - Clear screen',
-            '  Ctrl+C                  - Interrupt operation',
-            '  Ctrl+U                  - Clear input line',
-            '  Up/Down Arrows          - Navigate command history',
-            '  Tab                     - Autocomplete commands',
+            '  help                    - Show this help',
+            '  clear                   - Clear the screen',
+            '  about                   - Learn about this terminal',
+            '  matrix                  - Experience the Matrix effect',
             ''
         ];
 
         for (const line of helpText) {
             await terminal.typeMessage(line, 'info');
+        }
+    },
+
+    /**
+     * Mission command - Central hub for story progression
+     */
+    mission: async function(terminal, args) {
+        if (!terminal.missionSystem) {
+            await terminal.typeMessage('Mission system not initialized.', 'error');
+            return;
+        }
+        
+        await terminal.missionSystem.handleMissionCommand(args);
+    },
+
+    /**
+     * Status command - Debug command to check story system
+     */
+    status: async function(terminal, args) {
+        await terminal.typeMessage('╔══════════════════════════════════════════════════════════════╗', 'info');
+        await terminal.typeMessage('║                      SYSTEM STATUS                          ║', 'info');
+        await terminal.typeMessage('╚══════════════════════════════════════════════════════════════╝', 'info');
+        await terminal.typeMessage('', 'output');
+        
+        await terminal.typeMessage(`▓ Story Engine: ${terminal.story ? '◆ Active' : '◇ Not Found'}`, 'info');
+        await terminal.typeMessage(`▓ Mission System: ${terminal.missionSystem ? '◆ Active' : '◇ Not Found'}`, 'info');
+        
+        if (terminal.story) {
+            const progress = terminal.story.getProgressSummary();
+            await terminal.typeMessage(`► Character: ${progress.characterName || 'Not Set'}`, 'output');
+            await terminal.typeMessage(`► Current Mission: ${progress.currentMission || 'None'}`, 'output');
+            await terminal.typeMessage(`► Unlocked Commands: ${progress.unlockedCommands || 0}`, 'output');
+            await terminal.typeMessage(`► Has completed intro: ${terminal.story.hasStoryFlag('completed_intro') ? 'Yes' : 'No'}`, 'output');
+        }
+        
+        await terminal.typeMessage('', 'output');
+        await terminal.typeMessage('Type "help" to see available commands.', 'info');
+    },
+
+    /**
+     * Start command - Begin the Grid Infiltrator story experience
+     */
+    start: async function(terminal, args) {
+        // Check if story system is available
+        if (!window.startStoryExperience) {
+            await terminal.typeMessage('Story system not available. Please refresh the page.', 'error');
+            return;
+        }
+        
+        // Check if story has already been started
+        if (terminal.story && terminal.story.hasStoryFlag('intro_started')) {
+            await terminal.typeMessage('Story experience already in progress.', 'warning');
+            await terminal.typeMessage('Use "mission" to check objectives or "reset" to restart.', 'info');
+            return;
+        }
+        
+        await terminal.typeMessage('Initializing Grid Infiltrator story experience...', 'info');
+        await terminal.typeMessage('Preparing immersive startup sequence...', 'output');
+        
+        // Clear the current terminal and start story
+        setTimeout(async () => {
+            terminal.output.innerHTML = '';
+            await window.startStoryExperience();
+        }, 1000);
+    },
+
+    /**
+     * Reset command - Restart the story experience
+     */
+    reset: async function(terminal, args) {
+        if (terminal.story) {
+            // Clear localStorage to reset progress
+            localStorage.removeItem('grid_infiltrator_progress');
+            await terminal.typeMessage('Story progress reset. Refreshing...', 'info');
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        } else {
+            await terminal.typeMessage('Story system not available.', 'error');
+        }
+    },
+
+    /**
+     * Story-aware whoami command
+     */
+    whoami: async function(terminal, args) {
+        // Try to get character data from localStorage first
+        let characterName = 'Anonymous';
+        let storyData = null;
+        
+        try {
+            const saved = localStorage.getItem('grid_infiltrator_progress');
+            if (saved) {
+                storyData = JSON.parse(saved);
+                characterName = storyData.characterName || 'Anonymous';
+            }
+        } catch (error) {
+            console.warn('Failed to load story progress:', error);
+        }
+        
+        // Fallback to terminal story system if available
+        if (!terminal.story && characterName === 'Anonymous') {
+            await terminal.typeMessage('anonymous', 'output');
+            await terminal.typeMessage('', 'output');
+            await terminal.typeMessage('► Identity unknown. To establish your hacker persona:', 'info');
+            await terminal.typeMessage('► Type "start" to begin Grid Infiltrator story mode', 'info');
+            return;
+        }
+        
+        // If character exists in localStorage, show identity
+        if (characterName !== 'Anonymous') {
+            const level = storyData ? storyData.characterLevel : 1;
+            const experiencePoints = storyData ? storyData.experiencePoints : 0;
+            const unlockedCommands = storyData ? storyData.unlockedCommands.length : 0;
+            
+            await terminal.typeMessage('╔══════════════════════════════════════════════════════════════╗', 'info');
+            await terminal.typeMessage('║                      HACKER IDENTITY                        ║', 'info');
+            await terminal.typeMessage('╚══════════════════════════════════════════════════════════════╝', 'info');
+            await terminal.typeMessage('', 'output');
+            
+            await terminal.typeMessage(`► Callsign: ${characterName}`, 'success');
+            await terminal.typeMessage(`► Level: ${level}`, 'output');
+            await terminal.typeMessage(`► Current Mission: The Connection`, 'output');
+            await terminal.typeMessage(`► Commands Mastered: ${unlockedCommands}`, 'output');
+            await terminal.typeMessage(`► Experience Points: ${experiencePoints}`, 'output');
+            await terminal.typeMessage('', 'output');
+            
+            await terminal.typeMessage(`► Status: Active operative in "The Connection"`, 'info');
+            await terminal.typeMessage('► You are part of the digital resistance movement.', 'story');
+            await terminal.typeMessage('', 'output');
+            await terminal.typeMessage('► Next Steps: Type "mission" to see current objectives', 'info');
+            
+            return;
+        }
+        
+        // Get character name from story system if available
+        const terminalCharacterName = terminal.story ? terminal.story.characterName || 'Anonymous' : 'Anonymous';
+        
+        // If no character name is set, user needs to create their identity
+        if (terminalCharacterName === 'Anonymous' || terminalCharacterName === '') {
+            await terminal.typeMessage('anonymous', 'output');
+            await terminal.typeMessage('', 'output');
+            await terminal.typeMessage('► You haven\'t chosen your hacker identity yet.', 'info');
+            await terminal.typeMessage('► The character creation sequence should have set your name.', 'warning');
+            return;
+        }
+        
+        // Show full character identity from story system
+        const level = terminal.story.characterLevel;
+        const mission = terminal.story.getCurrentMission();
+        
+        await terminal.typeMessage('╔══════════════════════════════════════════════════════════════╗', 'info');
+        await terminal.typeMessage('║                      HACKER IDENTITY                        ║', 'info');
+        await terminal.typeMessage('╚══════════════════════════════════════════════════════════════╝', 'info');
+        await terminal.typeMessage('', 'output');
+        
+        await terminal.typeMessage(`► Callsign: ${terminalCharacterName}`, 'success');
+        await terminal.typeMessage(`► Level: ${level}`, 'output');
+        await terminal.typeMessage(`► Current Mission: ${mission ? mission.title : 'None'}`, 'output');
+        await terminal.typeMessage(`► Commands Mastered: ${terminal.story.unlockedCommands.length}`, 'output');
+        await terminal.typeMessage(`► Experience Points: ${terminal.story.experiencePoints}`, 'output');
+        await terminal.typeMessage('', 'output');
+        
+        // Show mission-specific identity information
+        if (mission) {
+            await terminal.typeMessage(`► Status: Active operative in "${mission.title}"`, 'info');
+            await terminal.typeMessage('► You are part of the digital resistance movement.', 'story');
+            await terminal.typeMessage('', 'output');
+            await terminal.typeMessage('► Next Steps: Type "mission" to see current objectives', 'info');
+        }
+        
+        // Track that user checked their identity - mark terminal navigation objective as complete
+        if (terminal.story) {
+            terminal.story.setStoryFlag('checked_identity');
+            terminal.story.setStoryFlag('learned_help'); // This completes the basic terminal navigation objective
+        }
+    },
+
+    /**
+     * Oracle command - Listen to Oracle's briefing and guidance
+     */
+    oracle: async function(terminal, args) {
+        if (!terminal.story) {
+            await terminal.typeMessage('Oracle is not available in standard mode.', 'error');
+            await terminal.typeMessage('Type "start" to begin Grid Infiltrator story mode.', 'info');
+            return;
+        }
+        
+        // Check if command is unlocked (should be available from the start)
+        if (!terminal.story.hasUnlockedCommand('oracle')) {
+            await terminal.typeMessage('Oracle connection not yet established.', 'warning');
+            await terminal.typeMessage('Complete current mission objectives first.', 'info');
+            return;
+        }
+        
+        // Get Oracle's dialogue based on story progress
+        const currentMission = terminal.story.currentMission;
+        const hasMetOracle = terminal.story.hasStoryFlag('met_oracle');
+        
+        await terminal.typeMessage('╔══════════════════════════════════════════════════════════════╗', 'info');
+        await terminal.typeMessage('║                      ORACLE CONNECTION                      ║', 'info');
+        await terminal.typeMessage('╚══════════════════════════════════════════════════════════════╝', 'info');
+        await terminal.typeMessage('', 'output');
+        
+        if (!hasMetOracle) {
+            // First meeting with Oracle
+            await terminal.typeMessage('▓ Establishing secure connection to Oracle...', 'info');
+            await terminal.typeMessage('▓ Quantum encryption protocols active...', 'info');
+            await terminal.typeMessage('', 'output');
+            
+            const introDialogue = terminal.story.getNPCDialogue('oracle', 'intro');
+            for (const line of introDialogue) {
+                await terminal.typeMessage(`[Oracle]: ${line}`, 'story');
+            }
+            
+            await terminal.typeMessage('', 'output');
+            await terminal.typeMessage('► Oracle\'s briefing received!', 'success');
+            await terminal.typeMessage('► You are now ready to begin your journey.', 'info');
+            await terminal.typeMessage('', 'output');
+            await terminal.typeMessage('► Next steps: Use "whoami" to choose your hacker identity', 'info');
+            await terminal.typeMessage('► Type "mission" to view your current objectives', 'info');
+            
+            // Mark that user has met Oracle and completed first objective
+            terminal.story.setStoryFlag('met_oracle');
+            terminal.story.addDialogueToHistory('oracle', introDialogue);
+            
+            // Check if this completes any mission objectives
+            if (terminal.missionSystem) {
+                terminal.missionSystem.trackAction('oracle_briefing', { firstTime: true });
+            }
+        } else {
+            // Subsequent conversations with Oracle
+            const encouragement = terminal.story.getNPCDialogue('oracle', 'encouragement');
+            const randomLine = encouragement[Math.floor(Math.random() * encouragement.length)];
+            
+            await terminal.typeMessage(`[Oracle]: ${randomLine}`, 'story');
+            await terminal.typeMessage('', 'output');
+            
+            // Provide mission-specific guidance
+            if (currentMission === 'prologue') {
+                await terminal.typeMessage('► Continue building your skills, young hacker.', 'info');
+                await terminal.typeMessage('► The corporate overlords grow stronger each day.', 'warning');
+            } else {
+                await terminal.typeMessage(`► Focus on your current mission: "${terminal.story.getCurrentMission().title}"`, 'info');
+                await terminal.typeMessage('► Type "mission hint" if you need guidance.', 'info');
+            }
+        }
+        
+        await terminal.typeMessage('', 'output');
+        await terminal.typeMessage('▓ Oracle connection terminated.', 'info');
+    },
+
+    /**
+     * Story-aware ls command for file exploration
+     */
+    ls: async function(terminal, args) {
+        if (!terminal.story) {
+            return await Commands.lsFallback(terminal, args);
+        }
+        
+        // Check if command is unlocked
+        if (!terminal.story.hasUnlockedCommand('ls')) {
+            await terminal.typeMessage('Command not yet available. Complete current mission objectives first.', 'warning');
+            return;
+        }
+        
+        const targetDir = args[0] || terminal.currentDirectory || '/home/user';
+        const availableFiles = terminal.story.getAvailableFiles(targetDir);
+        
+        if (Object.keys(availableFiles).length === 0) {
+            await terminal.typeMessage(`Directory ${targetDir} is empty or access denied.`, 'warning');
+            return;
+        }
+        
+        await terminal.typeMessage(`■ Contents of ${targetDir}:`, 'info');
+        await terminal.typeMessage('', 'output');
+        
+        // Show files with story context
+        for (const [filename, fileData] of Object.entries(availableFiles)) {
+            const type = typeof fileData === 'object' && fileData.content ? 'FILE' : 'DIR';
+            const icon = type === 'FILE' ? '▓' : '■';
+            const encrypted = fileData.encrypted ? ' [ENCRYPTED]' : '';
+            
+            await terminal.typeMessage(`${icon} ${filename}${encrypted}`, 'output');
+        }
+        
+        await terminal.typeMessage('', 'output');
+        await terminal.typeMessage('* Use "cat <filename>" to read file contents', 'info');
+        
+        // Track file exploration for mission progress
+        terminal.story.setStoryFlag('used_ls');
+        if (terminal.missionSystem) {
+            terminal.missionSystem.trackAction('used_ls', { directory: targetDir });
+        }
+    },
+
+    /**
+     * Story-aware cat command for reading files
+     */
+    cat: async function(terminal, args) {
+        if (!terminal.story) {
+            return await Commands.catFallback(terminal, args);
+        }
+        
+        // Check if command is unlocked
+        if (!terminal.story.hasUnlockedCommand('cat')) {
+            await terminal.typeMessage('Command not yet available. Complete current mission objectives first.', 'warning');
+            return;
+        }
+        
+        if (!args[0]) {
+            await terminal.typeMessage('Usage: cat <filename>', 'error');
+            await terminal.typeMessage('Specify a file to read its contents.', 'info');
+            return;
+        }
+        
+        const filename = args[0];
+        const currentDir = terminal.currentDirectory || '/home/user';
+        const fileContent = terminal.story.getFileContent(currentDir, filename);
+        
+        if (!fileContent) {
+            await terminal.typeMessage(`cat: ${filename}: No such file or directory`, 'error');
+            await terminal.typeMessage('* Use "ls" to see available files', 'info');
+            return;
+        }
+        
+        // Handle encrypted files
+        if (typeof fileContent === 'object' && fileContent.encrypted) {
+            await terminal.typeMessage(`▓ Reading ${filename}:`, 'info');
+            await terminal.typeMessage('', 'output');
+            await terminal.typeMessage('▒ [ENCRYPTED FILE DETECTED]', 'warning');
+            await terminal.typeMessage(`Raw content: ${fileContent.content}`, 'output');
+            await terminal.typeMessage('', 'output');
+            await terminal.typeMessage(`* This file is encrypted with: ${fileContent.cipher}`, 'info');
+            await terminal.typeMessage('* Use cipher commands to decrypt the message.', 'info');
+            
+            if (fileContent.cipher.includes('caesar')) {
+                await terminal.typeMessage('* Try: cipher caesar [shift] [text]', 'info');
+            }
+        } else {
+            // Display regular file content
+            await terminal.typeMessage(`▓ Reading ${filename}:`, 'info');
+            await terminal.typeMessage('', 'output');
+            
+            const lines = fileContent.split('\n');
+            for (const line of lines) {
+                await terminal.typeMessage(line, 'output');
+            }
+        }
+        
+        // Track file reading for mission progress
+        if (terminal.missionSystem) {
+            terminal.missionSystem.trackAction('read_file', { 
+                filename: filename, 
+                directory: currentDir 
+            });
+        }
+        
+        // Special handling for important files
+        if (filename === 'briefing.txt') {
+            terminal.story.setStoryFlag('read_briefing');
+            await terminal.typeMessage('', 'output');
+            await terminal.typeMessage('► Mission briefing read! Check "mission" for your objectives.', 'success');
+        }
+    },
+
+    /**
+     * Story-aware pwd command
+     */
+    pwd: async function(terminal, args) {
+        if (!terminal.story) {
+            await terminal.typeMessage('/home/user', 'output');
+            return;
+        }
+        
+        // Check if command is unlocked
+        if (!terminal.story.hasUnlockedCommand('pwd')) {
+            await terminal.typeMessage('Command not yet available. Complete current mission objectives first.', 'warning');
+            return;
+        }
+        
+        const currentDir = terminal.currentDirectory || '/home/user';
+        await terminal.typeMessage(`📍 Current location: ${currentDir}`, 'info');
+        
+        // Add story context about the location
+        const locationContext = {
+            '/home/user': 'Your personal Grid workspace - safe and secure.',
+            '/resistance': 'Secret resistance hideout - dangerous but necessary.',
+            '/corp': 'Corporate territory - high security zone!',
+            '/sector7': 'Forbidden zone - only advanced hackers survive here.'
+        };
+        
+        const context = locationContext[currentDir];
+        if (context) {
+            await terminal.typeMessage(`► ${context}`, 'story');
+        }
+        
+        // Track navigation for mission progress
+        terminal.story.setStoryFlag('used_pwd');
+        if (terminal.missionSystem) {
+            terminal.missionSystem.trackAction('used_pwd', { location: currentDir });
         }
     },
 
@@ -350,13 +812,6 @@ const Commands = {
      */
     pwd: async function(terminal, args) {
         await terminal.typeMessage(terminal.currentDirectory, 'output');
-    },
-
-    /**
-     * Show current user
-     */
-    whoami: async function(terminal, args) {
-        await terminal.typeMessage(terminal.currentUser, 'output');
     },
 
     /**
@@ -778,7 +1233,7 @@ const Commands = {
                 await terminal.typeMessage('Security test suite not loaded.', 'error');
             }
         } else if (testType === 'performance') {
-            await terminal.typeMessage('⚡ Running Performance Analysis...', 'info');
+            await terminal.typeMessage('▓ Running Performance Analysis...', 'info');
             if (window.PerformanceTestSuite) {
                 const perfTest = new window.PerformanceTestSuite();
                 perfTest.runPerformanceAnalysis();
@@ -822,11 +1277,11 @@ const Commands = {
                 await terminal.typeMessage('✨ Comprehensive testing initiated!', 'success');
                 await terminal.typeMessage('', 'output');
                 await terminal.typeMessage('Testing Categories:', 'info');
-                await terminal.typeMessage('  🌐 Cross-Browser Compatibility', 'output');
-                await terminal.typeMessage('  ⚡ Performance Optimization', 'output');
-                await terminal.typeMessage('  ♿ Accessibility Compliance', 'output');
-                await terminal.typeMessage('  🔒 Security & Privacy Audit', 'output');
-                await terminal.typeMessage('  👤 User Experience Evaluation', 'output');
+                await terminal.typeMessage('  ▓ Cross-Browser Compatibility', 'output');
+                await terminal.typeMessage('  ▓ Performance Optimization', 'output');
+                await terminal.typeMessage('  ▓ Accessibility Compliance', 'output');
+                await terminal.typeMessage('  ▓ Security & Privacy Audit', 'output');
+                await terminal.typeMessage('  ▓ User Experience Evaluation', 'output');
                 await terminal.typeMessage('', 'output');
                 await terminal.typeMessage('Check browser console for detailed results and reports.', 'success');
             } else {
@@ -840,6 +1295,56 @@ const Commands = {
             await terminal.typeMessage('  test ux          - User experience evaluation', 'info');
             await terminal.typeMessage('  test browser     - Cross-browser compatibility', 'info');
             await terminal.typeMessage('  test all         - Run all tests (default)', 'info');
+        }
+    },
+
+    /**
+     * EMERGENCY: Set instant mode for usability
+     */
+    turbo: async function(terminal) {
+        terminal.setInstantMode();
+        await terminal.typeMessage('▓ TURBO MODE ACTIVATED! All animations are now instant.', 'info');
+        await terminal.typeMessage('* Use "F1" to toggle speed settings or "Escape" to skip animations.', 'info');
+    },
+
+    /**
+     * EMERGENCY: Toggle animation speed
+     */
+    speed: async function(terminal, args) {
+        if (args[0]) {
+            const validSpeeds = ['instant', 'fast', 'smart', 'animated'];
+            if (validSpeeds.includes(args[0])) {
+                terminal.animationSpeed = args[0];
+                await terminal.typeMessage(`▓ Animation speed set to: ${args[0]}`, 'info');
+            } else {
+                await terminal.typeMessage(`❌ Invalid speed. Options: ${validSpeeds.join(', ')}`, 'error');
+            }
+        } else {
+            terminal.toggleAnimationSpeed();
+        }
+    },
+
+    /**
+     * Show current performance settings
+     */
+    performance: async function(terminal) {
+        const stats = [
+            '▓ TERMINAL PERFORMANCE SETTINGS:',
+            '',
+            `▓ Animation Speed: ${terminal.animationSpeed}`,
+            `▓ Skip Animations: ${terminal.skipAnimations}`,
+            `▓ Current FPS: ${terminal.performanceStats.frameRate}`,
+            '',
+            '* Commands:',
+            '  turbo          - Enable instant mode',
+            '  speed [mode]   - Set animation speed',
+            '  F1             - Toggle speed settings',
+            '  Escape         - Skip current animation',
+            ''
+        ];
+
+        for (const line of stats) {
+            await terminal.typeMessage(line, 'info');
         }
     }
 };

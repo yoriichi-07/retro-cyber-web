@@ -261,17 +261,17 @@ class Phase5Verification {
     }
 }
 
-// Auto-run verification when script loads
-document.addEventListener('DOMContentLoaded', async () => {
-    // Wait a moment for all systems to load
-    setTimeout(async () => {
-        const verification = new Phase5Verification();
-        const result = await verification.verify();
-        
-        // Make results globally available
-        window.phase5VerificationResults = result;
-    }, 1000);
-});
+// Auto-run verification when script loads - DISABLED FOR SIMPLIFIED UX
+// document.addEventListener('DOMContentLoaded', async () => {
+//     // Wait a moment for all systems to load
+//     setTimeout(async () => {
+//         const verification = new Phase5Verification();
+//         const result = await verification.verify();
+//         
+//         // Make results globally available
+//         window.phase5VerificationResults = result;
+//     }, 1000);
+// });
 
 // Export for manual use
 window.Phase5Verification = Phase5Verification;

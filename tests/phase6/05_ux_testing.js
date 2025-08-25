@@ -1284,13 +1284,13 @@ class UserExperienceTestSuite {
 if (typeof window !== 'undefined') {
     window.UserExperienceTestSuite = UserExperienceTestSuite;
     
-    // Auto-start testing after security tests
-    window.addEventListener('load', () => {
-        setTimeout(() => {
-            const uxTest = new UserExperienceTestSuite();
-            uxTest.runUXEvaluation();
-        }, 6000); // Wait 6 seconds for security tests to complete
-    });
+    // Auto-start testing after security tests - DISABLED FOR SIMPLIFIED UX
+    // window.addEventListener('load', () => {
+    //     setTimeout(() => {
+    //         const uxTest = new UserExperienceTestSuite();
+    //         uxTest.runUXEvaluation();
+    //     }, 6000); // Wait 6 seconds for security tests to complete
+    // });
 }
 
 export { UserExperienceTestSuite };

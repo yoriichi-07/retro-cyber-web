@@ -962,13 +962,13 @@ class AccessibilityTestSuite {
 if (typeof window !== 'undefined') {
     window.AccessibilityTestSuite = AccessibilityTestSuite;
     
-    // Auto-start testing after page load
-    window.addEventListener('load', () => {
-        setTimeout(() => {
-            const accessibilityTest = new AccessibilityTestSuite();
-            accessibilityTest.runAccessibilityAudit();
-        }, 3000); // Wait 3 seconds for app to initialize
-    });
+    // Auto-start testing after page load - DISABLED FOR SIMPLIFIED UX
+    // window.addEventListener('load', () => {
+    //     setTimeout(() => {
+    //         const accessibilityTest = new AccessibilityTestSuite();
+    //         accessibilityTest.runAccessibilityAudit();
+    //     }, 3000); // Wait 3 seconds for app to initialize
+    // });
 }
 
 export default AccessibilityTestSuite;

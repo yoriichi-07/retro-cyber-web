@@ -582,6 +582,10 @@ if (typeof window !== 'undefined') {
     window.Phase6TestOrchestrator = Phase6TestOrchestrator;
     window.ProductionReadinessChecklist = ProductionReadinessChecklist;
     
+    // Auto-testing disabled for cleaner user experience
+    // To run comprehensive tests, use the terminal command: test all
+    // Or manually: new Phase6TestOrchestrator().runComprehensiveTests()
+    /*
     // Auto-start comprehensive testing
     window.addEventListener('load', () => {
         setTimeout(() => {
@@ -591,6 +595,7 @@ if (typeof window !== 'undefined') {
             });
         }, 8000); // Wait 8 seconds for all systems to initialize
     });
+    */
 }
 
 export { Phase6TestOrchestrator, ProductionReadinessChecklist };

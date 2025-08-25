@@ -537,6 +537,9 @@ class CrossBrowserTestSuite {
 if (typeof window !== 'undefined') {
     window.CrossBrowserTestSuite = CrossBrowserTestSuite;
     
+    // Auto-testing disabled for cleaner user experience
+    // To run tests, use terminal command: test browser
+    /*
     // Auto-start testing after page load
     window.addEventListener('load', () => {
         setTimeout(() => {
@@ -544,6 +547,7 @@ if (typeof window !== 'undefined') {
             testSuite.runAllTests();
         }, 2000); // Wait 2 seconds for app to initialize
     });
+    */
 }
 
 export default CrossBrowserTestSuite;

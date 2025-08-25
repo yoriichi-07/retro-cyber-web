@@ -411,7 +411,7 @@ class PuzzleCommands {
                         // Check for correct Caesar solution
                         if (cipherText.toUpperCase() === 'NRFFRTZ_LBEX' && shift === 21) {
                             puzzleState.addSecret('caesar_master');
-                            await terminal.typeMessage('⚡ DECRYPTION SUCCESSFUL ⚡', 'success');
+                            await terminal.typeMessage('▓ DECRYPTION SUCCESSFUL ▓', 'success');
                             await terminal.typeMessage(`Decoded: ${result}`, 'output');
                             await terminal.typeMessage('', 'output');
                             await terminal.typeMessage('ACCESS CODE REVEALED: ghost_protocol_active', 'info');
@@ -475,7 +475,7 @@ class PuzzleCommands {
                 const correct = terminal.currentPattern ? terminal.currentPattern[terminal.currentPattern.length - 1] : null;
                 
                 if (answer === correct) {
-                    await terminal.typeMessage('🎯 PATTERN SOLVED! 🎯', 'success');
+                    await terminal.typeMessage('▓ PATTERN SOLVED! ▓', 'success');
                     puzzleState.addSecret('pattern_master');
                     puzzleState.addDiscovery('pattern_solved', 2);
                     puzzleState.addAttempt('pattern answer', true);
@@ -500,11 +500,11 @@ class PuzzleCommands {
         commandRegistry.konami = async function(terminal, args) {
             puzzleState.addAttempt('konami');
             
-            await terminal.typeMessage('🎮 KONAMI CODE ACTIVATED 🎮', 'success');
+            await terminal.typeMessage('▓ KONAMI CODE ACTIVATED ▓', 'success');
             await terminal.typeMessage('', 'output');
-            await terminal.typeMessage('⬆️ ⬆️ ⬇️ ⬇️ ⬅️ ➡️ ⬅️ ➡️ 🅱️ 🅰️', 'info');
+            await terminal.typeMessage('▲ ▲ ▼ ▼ ◄ ► ◄ ► ■ ◆', 'info');
             await terminal.typeMessage('', 'output');
-            await terminal.typeMessage('✨ CHEAT MODE ENABLED ✨', 'warning');
+            await terminal.typeMessage('▓ CHEAT MODE ENABLED ▓', 'warning');
             await terminal.typeMessage('Access to hidden functions granted!', 'output');
             
             puzzleState.addSecret('konami_master');

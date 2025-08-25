@@ -700,12 +700,16 @@ if (typeof window !== 'undefined') {
         requestAnimationFrame(monitorFrameRate);
     }
     
+    // Performance monitoring disabled for cleaner user experience  
+    // To run performance tests, use terminal command: test performance
+    /*
     // Start monitoring after page load
     window.addEventListener('load', () => {
         setTimeout(() => {
             monitorFrameRate();
         }, 5000); // Start monitoring after 5 seconds
     });
+    */
 }
 
 export default PerformanceProfiler;

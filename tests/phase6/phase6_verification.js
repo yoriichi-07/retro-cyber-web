@@ -264,6 +264,9 @@ class Phase6Verification {
 if (typeof window !== 'undefined') {
     window.Phase6Verification = Phase6Verification;
     
+    // Auto-verification disabled for cleaner user experience
+    // To run verification, use: new Phase6Verification().runVerification()
+    /*
     // Wait for all scripts to load before verifying
     window.addEventListener('load', () => {
         setTimeout(() => {
@@ -272,6 +275,7 @@ if (typeof window !== 'undefined') {
             verification.runVerification();
         }, 3000); // Wait 3 seconds for all scripts to initialize
     });
+    */
 }
 
 export { Phase6Verification };

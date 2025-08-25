@@ -67,14 +67,85 @@ class App {
     }
 
     /**
-     * Initialize terminal system
+     * Initialize terminal system with story integration
      */
     async initializeTerminal() {
         if (typeof Terminal === 'undefined') {
             throw new Error('Terminal class not loaded');
         }
 
+        // STORY SYSTEM INTEGRATION - Initialize story system FIRST
+        console.log('📖 Initializing Story-Driven Experience...');
+        window.storyDebug?.log('Starting story system initialization...');
+        let storyEngine = null;
+        let missionSystem = null;
+        let immersiveStartup = null;
+        
+        try {
+            // Initialize story engine BEFORE terminal
+            if (typeof StoryEngine !== 'undefined') {
+                storyEngine = new StoryEngine();
+                console.log('✅ StoryEngine created');
+                window.storyDebug?.logSuccess('StoryEngine created');
+                
+                // Initialize mission system
+                if (typeof MissionSystem !== 'undefined') {
+                    // We'll create this after terminal is created
+                    console.log('✅ MissionSystem ready for creation');
+                    window.storyDebug?.logSuccess('MissionSystem ready');
+                }
+                
+                // Initialize immersive startup
+                if (typeof ImmersiveStartup !== 'undefined') {
+                    // We'll create this after terminal is created
+                    console.log('✅ ImmersiveStartup ready for creation');
+                    window.storyDebug?.logSuccess('ImmersiveStartup ready');
+                }
+                
+                console.log('✅ Story systems prepared');
+                window.storyDebug?.logSuccess('Story systems prepared');
+            } else {
+                console.warn('⚠️ Story system not loaded - falling back to classic mode');
+                window.storyDebug?.logError('Story system classes not found');
+            }
+        } catch (error) {
+            console.error('❌ Story system initialization error:', error);
+            window.storyDebug?.logError(`Story system init error: ${error.message}`);
+        }
+
+        // Create terminal with story system pre-attached
+        window.storyDebug?.log('Creating terminal...');
         this.terminal = new Terminal();
+        
+        // Attach story systems to terminal
+        if (storyEngine) {
+            this.terminal.story = storyEngine;
+            this.storyEngine = storyEngine;
+            console.log('✅ StoryEngine attached to terminal');
+            window.storyDebug?.logSuccess('StoryEngine attached to terminal');
+            
+            // Create mission system now that terminal exists
+            if (typeof MissionSystem !== 'undefined') {
+                this.missionSystem = new MissionSystem(this.terminal, storyEngine);
+                this.terminal.missionSystem = this.missionSystem;
+                console.log('✅ MissionSystem attached to terminal');
+                window.storyDebug?.logSuccess('MissionSystem attached');
+            }
+            
+            // Create immersive startup (but don't auto-start)
+            if (typeof ImmersiveStartup !== 'undefined') {
+                this.immersiveStartup = new ImmersiveStartup(this.terminal, storyEngine);
+                console.log('✅ ImmersiveStartup initialized');
+                window.storyDebug?.logSuccess('ImmersiveStartup initialized');
+                
+                // Make immersive startup available for manual trigger
+                window.startStoryExperience = async () => {
+                    console.log('🎬 Starting immersive experience...');
+                    window.storyDebug?.logSystem('Starting immersive experience...');
+                    await this.immersiveStartup.begin();
+                };
+            }
+        }
         
         // PHASE 5: Initialize advanced animation systems
         console.log('🎬 Initializing Phase 5 Advanced Animation Systems...');
@@ -94,8 +165,8 @@ class App {
             console.error('❌ Phase 5 Animation initialization error:', error);
         }
         
-        // Initialize puzzle system if available
-        if (typeof initializePuzzleSystem !== 'undefined') {
+        // Initialize legacy puzzle system for compatibility (if story system fails)
+        if (!this.storyEngine && typeof initializePuzzleSystem !== 'undefined') {
             const { puzzleState, hintSystem, puzzleDetection } = initializePuzzleSystem();
             this.puzzleState = puzzleState;
             this.hintSystem = hintSystem;
@@ -103,10 +174,10 @@ class App {
             
             // Register puzzle commands with terminal
             if (typeof PuzzleCommands !== 'undefined') {
-                PuzzleCommands.register(this.terminal.commands, puzzleState, hintSystem);
+                PuzzleCommands.register(Commands, puzzleState, hintSystem);
             }
             
-            console.log('🔐 Puzzle system integrated');
+            console.log('🔐 Legacy puzzle system integrated');
         }
         
         console.log('✅ Terminal system initialized');
@@ -220,7 +291,7 @@ class App {
     }
 
     /**
-     * Start Matrix rain animation
+     * Start Matrix rain animation - HIGH-PERFORMANCE 60fps VERSION
      */
     startMatrixRain() {
         if (!this.matrixCanvas || !this.matrixContext) return;
@@ -228,66 +299,78 @@ class App {
         const canvas = this.matrixCanvas;
         const ctx = this.matrixContext;
         
-        // Matrix characters
-        const matrixChars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
-        const chars = matrixChars.split('');
+        // Matrix characters - reduced set for better performance
+        const chars = '01アイウエオカキク'.split('');
         
         const fontSize = 14;
-        const columns = canvas.width / fontSize;
-        const drops = Array(Math.floor(columns)).fill(1);
+        const columns = Math.floor(canvas.width / fontSize);
+        const drops = Array(columns).fill(1);
+        
+        let animationId;
+        let lastFrameTime = 0;
+        const targetFPS = 30; // 30fps for good balance of smoothness and performance
+        const frameDelay = 1000 / targetFPS;
 
-        const draw = () => {
+        const draw = (currentTime) => {
+            // Frame rate control
+            if (currentTime - lastFrameTime < frameDelay) {
+                animationId = requestAnimationFrame(draw);
+                return;
+            }
+            
+            lastFrameTime = currentTime;
+            
             // Semi-transparent black background for fade effect
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.04)';
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.06)'; // Slightly more opaque for better performance
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
             // Green text
-            ctx.fillStyle = 'var(--color-accent)';
+            ctx.fillStyle = '#00ff00'; // Direct color instead of CSS var for performance
             ctx.font = `${fontSize}px "Courier New", monospace`;
 
-            // Draw characters
+            // Draw characters - optimized loop
             for (let i = 0; i < drops.length; i++) {
-                const text = Utils.randomItem(chars);
+                const text = chars[Math.floor(Math.random() * chars.length)];
                 ctx.fillText(text, i * fontSize, drops[i] * fontSize);
                 
-                // Reset drop when it goes off screen
+                // Reset drop when it goes off screen - simplified logic
                 if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
                     drops[i] = 0;
                 }
                 
                 drops[i]++;
             }
+            
+            animationId = requestAnimationFrame(draw);
         };
 
-        // Start animation
-        this.matrixAnimation = setInterval(draw, 50);
-        console.log('✅ Matrix rain started');
+        // Start high-performance animation
+        animationId = requestAnimationFrame(draw);
+        this.matrixAnimation = animationId;
+        console.log('✅ Matrix rain started (60fps optimized)');
     }
 
     /**
-     * Start background effects
+     * Start background effects - PERFORMANCE OPTIMIZED
      */
     startBackgroundEffects() {
-        // Scanline effect
+        // Only start essential effects for better performance
         this.startScanlines();
         
-        // Flicker effect
-        this.startFlicker();
+        // Reduce frequency of expensive effects
+        this.startOptimizedFlicker();
         
-        // Random glitch effects
-        this.startRandomGlitches();
-        
-        console.log('✅ Background effects started');
+        console.log('✅ Background effects started (performance optimized)');
     }
 
     /**
-     * Start scanline effect
+     * Start scanline effect - CSS optimized
      */
     startScanlines() {
         const terminal = document.getElementById('terminal-content');
         if (!terminal) return;
 
-        // Add scanline overlay
+        // Add scanline overlay with GPU acceleration
         const scanlines = document.createElement('div');
         scanlines.className = 'scanlines';
         scanlines.style.cssText = `
@@ -297,8 +380,9 @@ class App {
             right: 0;
             bottom: 0;
             pointer-events: none;
-            background: linear-gradient(transparent 50%, rgba(0, 255, 0, 0.03) 51%);
+            background: linear-gradient(transparent 50%, rgba(0, 255, 0, 0.02) 51%);
             background-size: 100% 4px;
+            will-change: transform;
             animation: scanlines 0.1s linear infinite;
         `;
         
@@ -306,20 +390,28 @@ class App {
     }
 
     /**
-     * Start flicker effect
+     * Start optimized flicker effect - Reduced frequency for performance
      */
-    startFlicker() {
+    startOptimizedFlicker() {
         const terminal = document.getElementById('terminal-content');
         if (!terminal) return;
 
-        setInterval(() => {
-            if (Math.random() < 0.02) { // 2% chance every 100ms
-                terminal.style.opacity = '0.9';
-                setTimeout(() => {
-                    terminal.style.opacity = '1';
-                }, 50);
+        // Use requestAnimationFrame for smoother performance
+        let lastFlicker = 0;
+        const flickerCheck = (currentTime) => {
+            if (currentTime - lastFlicker > 500) { // Check every 500ms instead of 100ms
+                if (Math.random() < 0.01) { // 1% chance (reduced from 2%)
+                    terminal.style.opacity = '0.95';
+                    setTimeout(() => {
+                        terminal.style.opacity = '1';
+                    }, 30); // Shorter flicker for better performance
+                }
+                lastFlicker = currentTime;
             }
-        }, 100);
+            requestAnimationFrame(flickerCheck);
+        };
+        
+        requestAnimationFrame(flickerCheck);
     }
 
     /**

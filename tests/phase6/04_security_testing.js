@@ -932,13 +932,13 @@ if (typeof window !== 'undefined') {
     window.SecurityTestSuite = SecurityTestSuite;
     window.SecurityValidator = SecurityValidator;
     
-    // Auto-start testing after page load
-    window.addEventListener('load', () => {
-        setTimeout(() => {
-            const securityTest = new SecurityTestSuite();
-            securityTest.runSecurityAudit();
-        }, 4000); // Wait 4 seconds for app to initialize
-    });
+    // Auto-start testing after page load - DISABLED FOR SIMPLIFIED UX
+    // window.addEventListener('load', () => {
+    //     setTimeout(() => {
+    //         const securityTest = new SecurityTestSuite();
+    //         securityTest.runSecurityAudit();
+    //     }, 4000); // Wait 4 seconds for app to initialize
+    // });
 }
 
 export { SecurityTestSuite, SecurityValidator };
